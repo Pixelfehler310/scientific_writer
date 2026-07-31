@@ -1,25 +1,25 @@
-schema_version: 2
+﻿schema_version: 2
 paper:
-  title: "Empirische Untersuchung von MongoDB-Indizierungsstrategien zur Abfrageoptimierung in einem synthetischen E-Commerce-Produktkatalog"
-  research_question: "Wie lassen sich anhand von Query Shape, Selektivität und Datenmenge geeignete MongoDB-Indizes für ausgewählte typische Lesezugriffe auf den Produktkatalog eines E-Commerce-Shops bestimmen?"
+  title: "Empirische Untersuchung zur Abfrageoptimierung mit MongoDB-Indizes in einem E-Commerce-Produktkatalog"
+  research_question: "Wie lässt sich für den Produktkatalog eines E-Commerce-Shops aus ausgewählten typischen Query Shapes unter Berücksichtigung von Selektivität und Datenmenge eine geeignete gemeinsame MongoDB-Indexkonfiguration ableiten und empirisch validieren?"
   language: de
   document_type: seminararbeit
   discipline: computer_science
   workflow_type: technical_empirical
-  target_words: 4000
+  target_words: 4500
 submission:
   author: Simon Sucker
   matriculation_number: "3062546"
   date: "2026-07-31"
-  location: Iserlohn
+  location: Essen
   examiner: Prof. Dr. Andreas Steins
   co_examiner: null
   co_examiner_required: false
 word_budget:
-  introduction: 400
-  theory: 1000
-  main_part: 2200
-  conclusion: 400
+  introduction: 350
+  theory: 1550
+  main_part: 2250
+  conclusion: 350
   tolerance_percent: 10
 paths:
   document_root: manuscript
@@ -41,15 +41,17 @@ workflow:
   preserve_paragraph_ids: true
 institution:
   requirements_source: >-
-    Mündliche Vorgabe des Professors: Nutzung der bereitgestellten Vorlage;
+    MÃ¼ndliche Vorgabe des Professors: Nutzung der bereitgestellten Vorlage;
     keine weiteren formalen Vorgaben bekannt.
   word_count_rule: >-
-    Zielumfang 4000 Wörter; eine detaillierte Zählregel wurde nicht mitgeteilt.
+    MÃ¼ndlich genannter Zielumfang 4000 WÃ¶rter; eine detaillierte ZÃ¤hlregel oder
+    formale Toleranz wurde nicht mitgeteilt. FÃ¼r die Arbeitsplanung sind nach
+    menschlicher Entscheidung ca. 4500 WÃ¶rter vorgesehen, da der bereits
+    vorhandene Theorieblock etwa 1600 WÃ¶rter umfasst.
   ai_use_policy: >-
-    Informelle mündliche Auskunft des Professors: "So lange ihr nicht die
+    Informelle mÃ¼ndliche Auskunft des Professors: "So lange ihr nicht die
     komplette Arbeit mit KI schreibt ist das schon ok". Vorgesehene transparente
-    Offenlegung in der Eigenständigkeitserklärung: Nutzung von ChatGPT zur
-    Textoptimierung und zur Erstellung des praktischen Codes.
+    Es ist keine zusätzliche Offenlegung in der Eigenständigkeitserklärung vorgesehen.
   deviations:
   - Keine weiteren formalen Vorgaben bekannt.
 template:
