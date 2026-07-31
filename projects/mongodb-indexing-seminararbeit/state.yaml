@@ -1,11 +1,11 @@
 schema_version: 1
-current_phase: chapter_planning
+current_phase: brief
 phases:
   initialization: approved
   brief: approved
-  scoping: approved
-  outline: approved
-  chapter_planning: in_progress
+  scoping: stale
+  outline: stale
+  chapter_planning: stale
   deep_research: not_started
   evidence_synthesis: not_started
   practical_work: not_started
@@ -23,16 +23,22 @@ gates:
       submission location Iserlohn confirmed.'
   G1:
     status: approved
-    approved_at: '2026-07-31T18:12:11.095826+00:00'
+    approved_at: '2026-07-31T20:31:19.601448+00:00'
     approved_by: Simon Sucker
-    note: 'Human-confirmed in conversation: Perfekt! Weiter zu G2. Freigegeben sind
-      die workload-basierte Hauptforschungsfrage mit vier Teilfragen, höchstens drei
-      typische Produktkatalog-Query-Shapes, der gemeinsame Kandidatenpool mit kontrollierten
-      Hint-Vergleichen und natürlicher Planner-Beobachtung, die Reduktion und workloadweite
-      Validierung des finalen Kombisets sowie eine begrenzte Insert-/Update-Gegenprüfung
-      der Schreibkosten.'
+    note: 'G1 freigegeben. Bestätigt sind: allgemeine Indexset-Auswahlmethodik als
+      Hauptgegenstand mit E-Commerce-Fallstudie; die formulierte Hauptforschungsfrage;
+      Q1 bis Q3; I1 bis I8 als vorläufiger optionaler Kandidatenpool und I9 als verpflichtender
+      Unique-Integritätsindex; Gleichgewichtung der Query Shapes in der Fallstudie
+      bei optionalen Nutzergewichten im Werkzeug; Einzelindexmessungen nur als Screening-Modell
+      mit Strukturmetriken zur Kontrolle; Pareto-Auswahl ohne willkürliche Gesamtstrafe;
+      höchstens drei isoliert und ohne hint validierte Finalisten; sowie die Begrenzung
+      aller Aussagen auf Workload, Kandidatenraum, Daten, Messumgebung und Kostenmodell.
+      Messergebnisse werden zunächst je Skalierung und Selektivitätsvariante getrennt
+      ausgewertet; die Aggregations- und Robustheitsregel wird in G2 festgelegt. Der
+      Evaluator verarbeitet konfigurierte, registrierte ausführbare Query Shapes und
+      ist kein Parser für beliebige MongoDB-Abfragen.'
   G2:
-    status: approved
+    status: stale
     approved_at: '2026-07-31T18:32:34.981526+00:00'
     approved_by: Simon Sucker
     note: Dann sei G2 jetzt hiermit freigegeben! Freigegeben sind Scoping, Argumentationslinie,
@@ -76,4 +82,14 @@ invalidations:
   gates:
   - G1
   - G2
-last_validation: '2026-07-31T18:32:34.981526+00:00'
+- from_phase: brief
+  reason: 'Materielle Neuausrichtung der Inhaltsstrategie: Hauptgegenstand wird die
+    workload-basierte Auswahl und empirische Validierung eines Indexsets aus einem
+    endlichen Kandidatenraum; der E-Commerce-Produktkatalog dient als Fallstudie und
+    ein wiederverwendbarer Indexset-Evaluator als zweites Ergebnis. Forschungsfrage,
+    Beitrag, Kostenmodell und nachgelagerte Planung werden deshalb ab G1 neu aufgebaut.'
+  invalidated_at: '2026-07-31T20:25:55.098882+00:00'
+  gates:
+  - G1
+  - G2
+last_validation: '2026-07-31T20:31:19.601448+00:00'

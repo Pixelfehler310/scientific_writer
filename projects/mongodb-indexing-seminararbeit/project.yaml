@@ -1,7 +1,7 @@
 ﻿schema_version: 2
 paper:
-  title: "Empirische Untersuchung zur Abfrageoptimierung mit MongoDB-Indizes in einem E-Commerce-Produktkatalog"
-  research_question: "Wie lässt sich für den Produktkatalog eines E-Commerce-Shops aus ausgewählten typischen Query Shapes unter Berücksichtigung von Selektivität und Datenmenge eine geeignete gemeinsame MongoDB-Indexkonfiguration ableiten und empirisch validieren?"
+  title: "Workload-basierte Auswahl und empirische Validierung von MongoDB-Indexsets"
+  research_question: "Wie lässt sich für einen definierten MongoDB-Query-Workload aus einem endlichen Kandidatenpool ein geeignetes Indexset unter Berücksichtigung von Leseleistung, Indexspeicherbedarf und Schreibaufwand auswählen und empirisch validieren?"
   language: de
   document_type: seminararbeit
   discipline: computer_science
