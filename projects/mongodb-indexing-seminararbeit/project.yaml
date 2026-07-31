@@ -1,0 +1,72 @@
+schema_version: 2
+paper:
+  title: "Empirische Untersuchung von MongoDB-Indizierungsstrategien zur Abfrageoptimierung in einem synthetischen E-Commerce-Produktkatalog"
+  research_question: "Wie lassen sich anhand von Query Shape, Selektivität und Datenmenge geeignete MongoDB-Indizes für ausgewählte typische Lesezugriffe auf den Produktkatalog eines E-Commerce-Shops bestimmen?"
+  language: de
+  document_type: seminararbeit
+  discipline: computer_science
+  workflow_type: technical_empirical
+  target_words: 4000
+submission:
+  author: Simon Sucker
+  matriculation_number: "3062546"
+  date: "2026-07-31"
+  location: Iserlohn
+  examiner: Prof. Dr. Andreas Steins
+  co_examiner: null
+  co_examiner_required: false
+word_budget:
+  introduction: 400
+  theory: 1000
+  main_part: 2200
+  conclusion: 400
+  tolerance_percent: 10
+paths:
+  document_root: manuscript
+  bibliography: seminararbeit/literatur/literatur.bib
+  latex_template: seminararbeit
+  writing_style: null
+citations:
+  citation_style: plain
+  final_direct_quotes: forbidden
+  exact_pages_required_for_paginated_sources: true
+  exact_sections_required_for_web_sources: true
+  secondary_citations: exceptional_only
+research_notes:
+  excerpt_warning_words: 120
+  longer_excerpt_requires_human_approval: true
+  automatic_excerpt_splitting: forbidden
+workflow:
+  require_persisted_approvals: true
+  preserve_paragraph_ids: true
+institution:
+  requirements_source: >-
+    Mündliche Vorgabe des Professors: Nutzung der bereitgestellten Vorlage;
+    keine weiteren formalen Vorgaben bekannt.
+  word_count_rule: >-
+    Zielumfang 4000 Wörter; eine detaillierte Zählregel wurde nicht mitgeteilt.
+  ai_use_policy: >-
+    Informelle mündliche Auskunft des Professors: "So lange ihr nicht die
+    komplette Arbeit mit KI schreibt ist das schon ok". Vorgesehene transparente
+    Offenlegung in der Eigenständigkeitserklärung: Nutzung von ChatGPT zur
+    Textoptimierung und zur Erstellung des praktischen Codes.
+  deviations:
+  - Keine weiteren formalen Vorgaben bekannt.
+template:
+  provider: fh_swf_written_work
+  source_root: C:/Users/simon/Documents/uni/fh_swf/schriftliche_Ausarbeitungen
+  reference_root: .scientific-writing/template-reference
+  working_root: seminararbeit
+  lockfile: .scientific-writing/template-lock.yaml
+  entrypoint: main.tex
+  copy_policy: snapshot
+  update_policy: explicit
+  bootstrap_policy: conservative
+latex:
+  compiler: auto
+  engine: pdflatex
+  bibliography_backend: bibtex
+  bibliography_files:
+  - seminararbeit/literatur/literatur.bib
+  output_root: .scientific-writing/build/latex
+  visual_pdf_review: required

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Scientific Writing Project Link",
+  "type": "object",
+  "required": ["schema_version", "project_id"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "project_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9](?:[a-z0-9._-]{0,126}[a-z0-9])?$"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Scientific Writing Personal Profile",
+  "type": "object",
+  "required": ["schema_version"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "person": {"type": "object"},
+    "study": {"type": "object"},
+    "defaults": {"type": "object"},
+    "template_sources": {"type": "object"}
+  }
+}

@@ -1,0 +1,5 @@
+schema_version: 1
+projects:
+  mongodb-indexing-seminararbeit:
+    state_path: projects/mongodb-indexing-seminararbeit
+    project_root_hint: D:/projects/uni/mongodb_indexing_seminararbeit

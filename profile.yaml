@@ -1,0 +1,13 @@
+schema_version: 1
+person:
+  full_name: Simon Sucker
+  matriculation_number: "3062546"
+study:
+  degree: Master of Science
+  program: Angewandte Informatik
+  institution: null
+  department: null
+defaults:
+  declaration_place: null
+template_sources:
+  fh_swf_written_work: C:/Users/simon/Documents/uni/fh_swf/schriftliche_Ausarbeitungen
