@@ -1,51 +1,61 @@
-# Kapitelplan: evaluation Kandidatenvergleich, Kombiset und Diskussion
+# Kapitelplan: evaluation – Pareto-Ergebnisse, Finalvalidierung und Diskussion
 
 ## Funktion im Gesamtargument
 
-Das Kapitel beantwortet die empirischen Teilfragen: Es berichtet zunächst kontrollierte Einzelbefunde, trennt diese von der natürlichen Plannerwahl, reduziert dann transparent zum Kombiset und bewertet dieses workloadweit einschließlich begrenzter Schreibkosten und Grenzen.
+Das Kapitel beantwortet die empirischen Teilfragen. Es berichtet zuerst Qualität und Ergebnisse des Screenings, danach die vorab regelbasierte Finalistenauswahl und schließlich die physisch gemessene Setleistung, Modellabweichung, Empfehlung und Grenzen.
 
 ## Teilfrage und erwartetes Ergebnis
 
-- **Teilfrage:** Beantwortet Teilfrage 3 empirisch und Teilfrage 4 durch Reduktion und Schlussvalidierung; synthetisiert Teilfragen 1 und 2.
-- **Erwartetes Ergebnis:** Eine evidenzbasierte, bedingte Ausgangskonfiguration mit nachvollziehbaren verworfenen/bedingt geeigneten Kandidaten. Konkrete Ergebnisse bleiben bis zum neuen Benchmark offen.
+- **Teilfragen:** Beantwortet Teilfrage 3 mit den Pareto-Fronten und ihrer Stabilität; beantwortet Teilfrage 4 mit Finalvalidierung und Vergleich von Schätzung und Messung.
+- **Erwartetes Ergebnis:** Nicht dominierte Sets je Skalierung, Sensitivität der 5-/10-/20-%-Bänder, bis zu drei primäre Finalisten, tatsächliche Setkosten und eine bedingte Empfehlung für den Referenzworkload.
 
 ## Wortbudget
 
-**1.400 Wörter**
+**1.300 Wörter**
 
 ## Voraussetzungen und Übergabe
 
-- **Voraussetzungen:** Vollständiger neuer Benchmarklauf, validierte Ergebnisse, rohe Explain-Ausgaben, Laufzeit- und Speicherwerte, Write-Manifeste; der alte Lauf bleibt Pilot.
-- **Übergabe:** Liefert die verdichtete Konfiguration, Entscheidungsregeln und Übertragungsgrenzen für Kapitel 5.
+- **Voraussetzungen:** vollständige validierte Rohdaten, unveränderte Auswahlregeln, dokumentierte Messumgebung und erfolgreiche Ergebnisvalidierung.
+- **Übergabe:** Liefert die empirisch begründete Antwort und ihre Reichweite für Kapitel 5.
+
+## Geplante Unterstruktur
+
+| Abschnitt | Inhalt | Absatz-IDs |
+| --- | --- | --- |
+| 4.1 | Qualität und Plausibilität der Kandidatenprofile | EV-04-P01 bis EV-04-P02 |
+| 4.2 | Pareto-Fronten und Skalenwechsel | EV-04-P03 bis EV-04-P04 |
+| 4.3 | Finalistenauswahl und Sensitivität der 5-/10-/20-%-Bänder | EV-04-P05 bis EV-04-P06 |
+| 4.4 | Tatsächliche Read-, Speicher- und Write-Ergebnisse | EV-04-P07 |
+| 4.5 | Schätzung gegen Messung | EV-04-P08 |
+| 4.6 | Empfehlung, Übertragbarkeit und Limitationen | EV-04-P09 |
 
 ## Absatzplan
 
 | Absatz-ID | Funktion | Kernaussage | Begründung | Evidenzbedarf | Beziehung davor | Beziehung danach | Zielwörter | Medium | Offene Recherche |
 | --- | --- | --- | --- | --- | --- | --- | ---: | --- | --- |
-| EV-04-P01 | Ergebnislesart fixieren | Die Auswertung folgt Kapitel 3 und trennt strukturelle Explain-Metriken, reale Laufzeit, Plannerwahl und Konfigurationsentscheidung. | Verhindert selektive Siegerlogik und bereitet die Lesart der Medien vor. | Eigene Methode und Ergebnisdaten. | Übergabe aus Methode. | Voraussetzung → EV-04-P02. | 80 | keines | Nach dem Lauf Vollständigkeit aller geplanten Messartefakte prüfen. |
-| EV-04-P02 | Q1-Kandidatenbefund | Baseline und I1–I5 werden für beide Kategorieselektivitäten und drei Skalen anhand von Struktur, Laufzeit und Speicher verglichen, ohne aus einem Einzelwert zu entscheiden. | Q1 prüft Equality-/Sortierreihenfolge, Fetch-Aufwand, Partial-Eignung und Präfixredundanz. | Eigene validierte Read-, Explain- und Indexgrößendaten; Kapitel-2-Kriterien. | Anwendung. | Vergleich → EV-04-P03. | 220 | M-EV-01 | Gewinner, Größenordnungen und Plannerentscheidungen bleiben bis zum Lauf offen. |
-| EV-04-P03 | Q2-Kandidatenbefund | I6–I8 werden unter beiden Tagselektivitäten und drei Skalen bewertet; nur zuvor validierte Ergebnisse mit korrekter Kardinalität und Prädikaterfüllung gehen ein. | Q2 prüft Multikey- und Partial-Nutzbarkeit unter einer anderen Query Shape. | Eigene validierte Read-, Explain- und Indexgrößendaten; Multikey-/Partial-Theorie. | Parallele Anwendung. | Übergabe → EV-04-P04. | 180 | M-EV-02 | Automatisierte Q2-Ergebnisvalidierung im Run-Manifest bestätigen. |
-| EV-04-P04 | Q3-Kandidatenbefund | Der `productId`-Unique-Index wird gegen die Baseline für den Detailabruf eingeordnet; die konzeptionelle `_id`-Alternative bleibt von der Messung getrennt. | Vermeidet eine überzogene Generalisierung aus einem Punktlookup. | Eigene Daten; Referenzschema; dokumentierte Unique-Regeln. | Themenwechsel. | Synthese → EV-04-P05. | 100 | M-EV-03 | Aktive/inaktive Produktsemantik und Existenz des Zielprodukts im Manifest prüfen. |
-| EV-04-P05 | Plannerwahl einordnen | Der Lauf ohne Hint zeigt je Query den gewählten Pfad; Übereinstimmung oder Abweichung zu den kontrollierten Messungen wird als eigene Beobachtung berichtet. | Plannerwahl und gemessene Kandidatenleistung sind verschiedene Evidenzen. | Eigene Planner- und Hint-Daten; Explain-Dokumentation. | Synthese. | Folge → EV-04-P06. | 130 | M-EV-03 | Plan-Cache- und Cachezustand aus Manifest kontrollieren. |
-| EV-04-P06 | Kombiset ableiten | Die Reduktion dokumentiert pro Kandidat Beibehalten, Entfernen oder bedingte Eignung anhand von Abdeckung, Redundanz, Struktur, Laufzeit, Speicher und Eligibility; Nichtauswahl durch den Planner ist allein kein Ausschlussgrund. | Erst diese mehrdimensionale Abwägung beantwortet die Frage nach einer gemeinsamen Konfiguration. | Eigene vollständige Kandidatenmatrix; Kriterien aus Kapitel 2. | Ursache. | Folge → EV-04-P07. | 220 | M-EV-04 | Endgültige Mitglieder erst nach Messung eintragen; keine vorab festgelegte Finalmenge. |
-| EV-04-P07 | Finalvalidierung berichten | Das reduzierte Set wird ohne Hint auf allen drei Queries gegen die `_id`-Baseline validiert; verwendete Pfade und gesamte Indexgröße werden ausgewiesen. | Prüft die reale gemeinsame Konfiguration statt nur Einzelkandidaten im Pool. | Eigene finale Read-, Explain- und Speicherartefakte. | Prüfung der Folge. | Einschränkung → EV-04-P08. | 140 | M-EV-04 | Sauber getrennte Run-IDs für Pool- und Finalzustand prüfen. |
-| EV-04-P08 | Schreibtrade-off berichten | Der begrenzte Vergleich von 1.000 Inserts und 1.000 Aktivstatus-Updates bei 500k stellt Baseline und finales Set mit fünf Wiederholungen gegenüber. | Macht Indexwartung sichtbar, ohne Schreiblast umfassend zu modellieren. | Eigene Write-Manifeste; MongoDB-Quelle zur Einordnung. | Einschränkung. | Synthese → EV-04-P09. | 100 | M-EV-04 | Identische Ausgangszustände, Write Concern, Bulk-Optionen und Fehlerfreiheit verifizieren. |
-| EV-04-P09 | Befunde synthetisieren | Quer über Q1–Q3 wird herausgearbeitet, wie Query Shape, Selektivität und Datenmenge die gemessenen Unterschiede und die bedingte Indexwahl erklären. | Verbindet Einzelbefunde mit Teilfrage 3 und bereitet die direkte Forschungsantwort vor. | Eigene validierte Befunde; Erklärungsbegriffe aus Kapitel 2. | Synthese der Einzelergebnisse. | Einschränkung → EV-04-P10. | 110 | keines | Erst nach dem Lauf festlegen, welche Abhängigkeiten tatsächlich durch Daten gestützt sind. |
-| EV-04-P10 | Reichweite begrenzen | Synthetische Verteilungen, drei ausgewählte Queries, einzelner Host/Cachezustand, fehlende Konkurrenzlast, maximale Skala und begrenzter Write-Test bestimmen interne und externe Übertragungsgrenzen. | Die resultierende Konfiguration ist eine validierte Ausgangskonfiguration, kein universelles Produktionsschema. | Eigene Methoden- und Ergebnisgrenzen; ggf. Benchmarkliteratur. | Einschränkung. | Übergabe → Kapitel 5. | 120 | keines | Nach Ergebnissen prüfen, welche Grenzen die Schlussfolgerung konkret abschwächen. |
+| EV-04-P01 | Auswertungsgrundlage prüfen | Nur vollständige Profile mit gültigen Ergebnissen, plausiblen Explain-Strukturen und dokumentierten Ausgangszuständen gehen in die Kostenmatrix ein. | Macht Datenqualität sichtbar, bevor Fronten oder Gewinner berichtet werden. | Eigene Validierungsberichte, Manifeste und Ausschlussprotokolle. | Übergabe aus Methode. | Voraussetzung → EV-04-P02. | 90 | keines | Kriterien und Anzahl ausgeschlossener Läufe erst aus finalen Artefakten einsetzen. |
+| EV-04-P02 | Einzelprofile einordnen | Baseline-normalisierte Zeiten und Strukturmetriken zeigen je Queryvariante, welche Kandidaten das Screening tragen und wo Zeit- und Explain-Signale auseinanderfallen. | Prüft die Plausibilität des vereinfachten Kostenmodells, ohne Einzelkandidaten schon als Setempfehlung auszugeben. | Eigene Profilierungsdaten; Theoriebegriffe zu Compound, Partial und Multikey. | Anwendung. | Berechnung → EV-04-P03. | 150 | M-EV-01 | Konkrete Kandidatenunterschiede und Ausreißer bleiben bis zum validierten Lauf offen. |
+| EV-04-P03 | Pareto-Fronten berichten | Für 10k, 100k und 500k werden Anzahl und Zusammensetzung der nicht dominierten Sets sowie maßgebliche Trade-offs getrennt dargestellt. | Beantwortet, welche Sets je Skalierung nicht dominiert sind, ohne Skalen zu einer Gesamtfunktion zu vermischen. | Eigene enumerierte Zielvektoren, Fronten und Dominanztests. | Folge. | Vergleich → EV-04-P04. | 150 | M-EV-02 | Darstellungsform nach tatsächlicher Frontgröße wählen; keine unlesbaren Volltabellen im Haupttext. |
+| EV-04-P04 | Skalenstabilität analysieren | Übereinstimmungen und Wechsel der Pareto-Mitgliedschaft werden auf veränderte Read-Kosten und Indexgrößen zurückgeführt, soweit die Daten dies stützen. | Beantwortet den Stabilitätsaspekt von Teilfrage 3 und trennt Beobachtung von Erklärung. | Eigene Fronten und Profilwerte; ggf. Theorie zur Skalierungsabhängigkeit. | Kontrast. | Auswahl → EV-04-P05. | 130 | M-EV-02 | Keine kausale Cache- oder Plannererklärung ohne passende Messdaten. |
+| EV-04-P05 | Primäre Finalisten auswählen | Read-Anker, Speicher- und Write-Kompromiss werden exakt nach dem 10-%-Band und den Tie-Breakern bestimmt; zusammenfallende Rollen führen zu weniger Sets. | Zeigt, dass Finalisten nicht nach ihren späteren Messwerten ausgewählt wurden. | Eigenes Auswahlmanifest und reproduzierbare Auswahltests. | Folge. | Sensitivität → EV-04-P06. | 150 | M-EV-03 | Rollen, Setmitglieder und Tie-Breaker erst aus dem finalen Manifest einsetzen. |
+| EV-04-P06 | Band-Sensitivität bewerten | Die 5-%- und 20-%-Auswertungen zeigen, ob sich Kompromisssets, Indexanzahl, Speicher oder Write-Proxy bei veränderter Read-Toleranz ändern. | Prüft die Abhängigkeit der Auswahl von der gesetzten 10-%-Präferenz, ohne zusätzliche Finalisten nachzunominieren. | Eigene Sensitivitätsausgabe; keine zusätzliche physische Evidenz für nur dort auftretende Sets. | Kontrast und Einschränkung. | Prüfung → EV-04-P07. | 160 | M-EV-03 | Stabilität oder Wechsel nicht vorwegnehmen; alternative Sets ausdrücklich als Screening-Ergebnis kennzeichnen. |
+| EV-04-P07 | Tatsächliche Setleistung berichten | Für `B` und die primären Finalisten werden unhinted Read-Kosten, Plannerwahl, gesamte Indexgröße sowie Insert-/Update-Messungen gegenübergestellt. | Liefert die belastbare physische Evidenz für die realen Trade-offs der ausgewählten Konfigurationen. | Eigene Finalistenläufe, Explain-Daten, Laufzeiten, Größen- und Write-Manifeste. | Prüfung. | Vergleich → EV-04-P08. | 160 | M-EV-04 | Nur validierte Wiederholungen und äquivalente Ausgangszustände verwenden. |
+| EV-04-P08 | Schätzung gegen Messung prüfen | Abweichungen zwischen Screening und materialisierter Leistung werden je Zielgröße quantifiziert und mit beobachteter Plannerwahl oder Interaktion vorsichtig eingeordnet. | Beantwortet, wie gut Baseline-/Einzelprofile die Setleistung vorhersagen, und markiert Grenzen des Evaluators. | Eigene Schätz- und Messwerte; technische Dokumentation zur Planinterpretation; ggf. Literatur zu Kostenschätzungsgrenzen. | Vergleich. | Synthese → EV-04-P09. | 170 | M-EV-04 | Fehlermaß und Vorzeichenkonvention vor Auswertung festlegen; keine unbeobachtete Ursache behaupten. |
+| EV-04-P09 | Empfehlung und Grenzen synthetisieren | Die Empfehlung nennt das unter den gesetzten Präferenzen geeignete Set beziehungsweise den verbleibenden Trade-off und begrenzt ihn auf Workload, Kandidatenraum, Daten, Umgebung und Kostenmodell. | Verbindet alle Teilantworten, diskutiert Übertragbarkeit und verhindert universelle Optimalitätsbehauptungen. | Eigene validierte Ergebnisse; bereits eingeführte Literatur zu Grenzen; dokumentierte Limitationen. | Synthese und Einschränkung. | Übergabe → Kapitel 5. | 140 | keines | Empfehlung erst nach Evidenzsynthese formulieren; Konkurrenzlast, andere Workloads und größere Skalen als Grenzen prüfen. |
 
-**Summe Zielwörter: 80 + 220 + 180 + 100 + 130 + 220 + 140 + 100 + 110 + 120 = 1.400.**
+**Summe Zielwörter: 90 + 150 + 150 + 130 + 150 + 160 + 160 + 170 + 140 = 1.300.**
 
 ## Medienplan
 
 | Medium-ID | Typ | Aussagefunktion | Herkunft/Erzeugung | Beschriftung | Einführung und Interpretation |
 | --- | --- | --- | --- | --- | --- |
-| M-EV-01 | Grafik oder Tabelle | Zeigt Q1-Kandidaten über Skalen und Selektivitäten mit Strukturmetriken und medianer Laufzeit; nur eine Darstellungsform nach Datenprüfung wählen. | Eigene Benchmarkdaten. | „Q1: Kandidatenvergleich nach Datenmenge und Selektivität“ | EV-04-P02 führt die Kodierung ein und interpretiert Unterschiede nicht isoliert. |
-| M-EV-02 | Grafik oder Tabelle | Zeigt Q2-Multikey-/Partial-Kandidaten über common/rare Tags und Skalen. | Eigene Benchmarkdaten. | „Q2: Kandidatenvergleich für tagbasierte Filterung“ | EV-04-P03 führt ein und interpretiert Eligibility getrennt von Leistung. |
-| M-EV-03 | Tabelle | Verdichtet Q3 sowie Plannerwahl je Query; verhindert übergroße Visualisierung für Punktlookup. | Eigene Benchmark- und Explain-Daten. | „Produktdetailabruf und natürliche Planner-Auswahl“ | EV-04-P04 stellt Q3 dar; EV-04-P05 ergänzt die Planner-Spalten. |
-| M-EV-04 | Tabelle | Zeigt finale Konfiguration, begründete Kandidatenentscheidung, Gesamtindexgröße, Read-Validierung und begrenzte Write-Trade-offs zusammen. | Eigene Reduktions- und Benchmarkdaten. | „Finales Kombiset und Validierung gegenüber der Baseline“ | EV-04-P06 führt die Auswahl ein; EV-04-P07/P08 interpretieren die Validierungs- und Kostenfelder. |
+| M-EV-01 | kompakte Profiltabelle | Zeigt pro Queryvariante die Baseline und die für das Kostenminimum maßgeblichen Einzelprofile einschließlich zentraler Strukturmetriken. | Eigene validierte Kandidatenprofile. | „Grundlage der geschätzten Read-Kosten“ | EV-04-P02 führt Auswahl und Lesart ein; vollständige Profile verbleiben im Anhang/Artefaktarchiv. |
+| M-EV-02 | Pareto-Darstellung oder verdichtete Tabelle | Vergleicht Frontmitgliedschaft und Zielwerte über die drei Skalierungen. | Eigene Enumeration und Pareto-Ausgabe. | „Nicht dominierte Indexsets nach Datenskalierung“ | EV-04-P03 erläutert die Fronten; EV-04-P04 interpretiert stabile und wechselnde Sets. |
+| M-EV-03 | Tabelle | Stellt Read-Anker, Speicher- und Write-Kompromiss bei 10 % sowie Abweichungen bei 5 % und 20 % gegenüber. | Eigenes Auswahl- und Sensitivitätsmanifest. | „Finalistenauswahl und Sensitivität des Read-Bands“ | EV-04-P05 führt die primären Rollen ein; EV-04-P06 interpretiert Bandwechsel. |
+| M-EV-04 | Tabelle oder kombinierte Grafik | Vergleicht für Baseline und Finalisten geschätzte mit tatsächlichen Read-Kosten, Plannerwahl, Speicher und Write-Kosten. | Eigene Finalvalidierung. | „Schätzung und physisch gemessene Setleistung“ | EV-04-P07 führt Messwerte ein; EV-04-P08 interpretiert Abweichungen. |
 
 ## Offene Entscheidungen
 
-- Keine Messwerte, Gewinner, finale `createIndex`-Definition oder Reduktionsentscheidung vor dem neuen Lauf.
-- Medienform von M-EV-01/M-EV-02 erst nach Datenform und Lesbarkeit entscheiden; pro Aussage nur die kompaktere Form verwenden.
-- Ausreißer-, Fehler- und Vollständigkeitsbehandlung der Messdaten muss vor Auswertung dokumentiert werden.
+- Die endgültige Medienform hängt von Frontgröße und Datenlesbarkeit ab; jede Darstellung benötigt eine eigenständige Aussage.
+- Ergebnisdarstellung, Interpretation und Limitationen bleiben unterscheidbar, auch wenn sie im selben Kapitel stehen.
+- Keine Messzahl, Setzusammensetzung oder Empfehlung wird vor Abschluss und Validierung des neuen Laufs eingesetzt.

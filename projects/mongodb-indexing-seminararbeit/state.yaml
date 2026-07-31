@@ -1,11 +1,11 @@
 schema_version: 1
-current_phase: outline
+current_phase: chapter_planning
 phases:
   initialization: approved
   brief: approved
   scoping: approved
   outline: approved
-  chapter_planning: stale
+  chapter_planning: approved
   deep_research: not_started
   evidence_synthesis: not_started
   practical_work: not_started
@@ -51,10 +51,10 @@ gates:
       bei 5 und 20 Prozent. Freigegeben sind außerdem die verständlich überarbeitete
       Hauptforschungsfrage und die vier Teilfragen. G3 wird in einem neuen Chat bearbeitet.
   G3:
-    status: pending
-    approved_at: null
-    approved_by: null
-    note: null
+    status: approved
+    approved_at: '2026-07-31T22:49:31.701795+00:00'
+    approved_by: Simon Sucker
+    note: Alles klar G3 approved, klingt gut.
   G4:
     status: pending
     approved_at: null
@@ -99,4 +99,4 @@ invalidations:
   gates:
   - G1
   - G2
-last_validation: '2026-07-31T21:49:52.681976+00:00'
+last_validation: '2026-07-31T22:49:31.701795+00:00'

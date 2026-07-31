@@ -1,57 +1,56 @@
-# Kapitelplan: foundations Von Query Shapes zur Indexkonfiguration
+# Kapitelplan: foundations – Workloadbasierte Auswahl von MongoDB-Indexsets
 
 ## Funktion im Gesamtargument
 
-Das Kapitel entwickelt ausschließlich die Begriffe und Entwurfsregeln, aus denen Kandidatenpool, Vergleichskriterien und spätere Reduktionsentscheidung folgen. Die vorhandene Gliederung in 2.1 Dokumentmodell und Indexierung, 2.2 Abfrageverarbeitung und `explain` sowie 2.3 relevante Indexstrategien bleibt bestehen. Die Absatzfunktionen dienen der gezielten Überarbeitung des vorhandenen Textes und verlangen keine neue Unterkapitelstruktur.
+Das Kapitel entwickelt genau die Begriffe und technischen Regeln, aus denen Kandidatenraum, Kostenmodell, Pareto-Auswertung und Grenzen des Screenings folgen. Allgemeine MongoDB-Einführungen und nicht verwendete Indexarten bleiben ausgeschlossen.
 
 ## Teilfrage und erwartetes Ergebnis
 
-- **Teilfrage:** Begründet Teilfrage 1, beantwortet Teilfrage 2 konzeptionell und schafft Kriterien für Teilfragen 3 und 4.
-- **Erwartetes Ergebnis:** Ein in Prosa entwickeltes Kriterienraster „Queryanforderung – Indexmerkmal – erwartete Planwirkung – Kosten/Risiko“, das in Kapitel 3 in der konkreten Kandidaten- und Versuchsmatrix operationalisiert wird.
+- **Teilfragen:** Begründet Teilfrage 1 und 2 konzeptionell; liefert Interpretationsbegriffe für Teilfrage 3 und 4.
+- **Erwartetes Ergebnis:** Ein konsistentes Modell aus Workload, Queryvarianten und Gewichten, Pflicht- und optionalen Indizes, zulässigen Sets, Zielgrößen, Constraints und Pareto-Dominanz.
 
 ## Wortbudget
 
-**1.550 Wörter**
+**1.300 Wörter**
 
 ## Voraussetzungen und Übergabe
 
-- **Voraussetzungen:** Festgelegte Query Shapes aus Scoping; verifizierte MongoDB- und Grundlagenquellen folgen erst nach G3.
-- **Übergabe:** Liefert Regeln zu Equality/Sortierung, Präfixen, Multikey, Partial, Unique, Explain und Kosten für die Kandidatenmatrix und Messauswertung in Kapitel 3.
+- **Voraussetzungen:** G2-Scope, Referenzworkload und vorab festgelegter Kandidatenraum.
+- **Übergabe:** Kapitel 3 instanziiert das Modell als Evaluator und reproduzierbares Experiment.
 
-## Umsetzung im vorhandenen Manuskript
+## Geplante Unterstruktur
 
-| Bestehender Abschnitt | Zugeordnete Absatzfunktionen | Geplanter Eingriff |
+| Abschnitt | Inhalt | Absatz-IDs |
 | --- | --- | --- |
-| 2.1 Dokumentenorientierte Datenbanken und Indexierung | FO-02-P01, FO-02-P02, FO-02-P11 | Bestehenden Text sprachlich straffen; Produktdokument, Workloadbezug sowie Speicher-/Schreibkosten beibehalten und präzisieren. |
-| 2.2 Indexbasierte Abfrageverarbeitung und `explain` | FO-02-P03, FO-02-P10 | Vorhandene Plan- und Explain-Erklärung kürzen; Versionsbezug korrigieren sowie `hint()`, Plan-Cache-Grenze und getrennte reale Queryzeit ergänzen. |
-| 2.3 Indexarten und Entwurfsstrategien | FO-02-P04 bis FO-02-P09, FO-02-P11 | Vorhandene Abschnitte zu Selektivität, Single Field, Compound/ESR, Multikey und Partial weiterverwenden; Datenmengeneffekt und Unique-`productId` ergänzen. |
-
-Die Zuordnung ist funktional: Die stabilen Absatzfunktionen werden innerhalb der drei vorhandenen Unterkapitel umgesetzt, ohne daraus elf neue Unterkapitel zu bilden. Jeder Manuskriptabsatz behält dabei eine eindeutige Hauptfunktion. Ziel ist eine punktuelle Überarbeitung statt einer Neufassung.
+| 2.1 | Query Workload, Query Shape und Gewichte | FO-02-P01 |
+| 2.2 | MongoDB-Indexzugriff, Planner und Explain | FO-02-P02 |
+| 2.3 | Compound-Präfixe, ESR, Partial-, Multikey- und Unique-Eigenschaften | FO-02-P03 bis FO-02-P04 |
+| 2.4 | Index Selection Problem, Constraints und Pareto-Dominanz | FO-02-P05 bis FO-02-P06 |
+| 2.5 | Grenzen von Kostenschätzung und MongoDB-Screeningmechanismen | FO-02-P07 bis FO-02-P08 |
 
 ## Absatzplan
 
 | Absatz-ID | Funktion | Kernaussage | Begründung | Evidenzbedarf | Beziehung davor | Beziehung danach | Zielwörter | Medium | Offene Recherche |
 | --- | --- | --- | --- | --- | --- | --- | ---: | --- | --- |
-| FO-02-P01 | Begriffsrahmen | Der dokumentierte MongoDB-Begriff Query Shape wird von den zusätzlichen experimentellen Parametern wie Limit und konkretem Filterwert unterschieden; gemeinsam bilden sie den festgelegten Referenzworkload. | Verhindert eine unscharfe Definition und macht die workload-basierte Betrachtung prüfbar. | MongoDB-Dokumentation zu Query Shapes; Literatur zur workload-basierten Indexauswahl. | Anschluss an Einleitung. | Voraussetzung → FO-02-P02. | 120 | keines | Terminologie und Versionsbezug für Query Shape exakt verifizieren. |
-| FO-02-P02 | Modellbezug | Das Produktdokument verbindet Kategorie, Preis, Tags, Aktivstatus und fachliche ID; erläutert werden nur die für Q1–Q3 relevanten Strukturmerkmale. | Verhindert eine allgemeine Einführung in MongoDB-Datenmodellierung. | MongoDB-Dokumentmodell; eigene Referenzstruktur. | Konkretisierung. | Grundlage → FO-02-P03. | 100 | keines | Vorhandene Grundlagenpassagen auf Wiederverwendung und Straffung prüfen. |
-| FO-02-P03 | Zugriffsmechanismus erklären | Geordnete Indexstrukturen eröffnen alternative Zugriffspfade; Explain macht insbesondere Collection-/Index-Scan, Fetch und Sortierstufen sowie deren Aufwand sichtbar. | Strukturmetriken lassen sich nur vor diesem Planmodell interpretieren. | B-Tree-Grundlage; MongoDB-Index- und Explain-Dokumentation. | Fortführung. | Voraussetzung → FO-02-P04. | 170 | keines | Planstufen, Implementierungsbehauptungen und Kennzahlen gegen MongoDB 8.2 verifizieren. |
-| FO-02-P04 | Selektivität und Datenmenge erklären | Der mögliche Indexnutzen hängt davon ab, welchen Anteil des Bestands ein Prädikat trifft und wie sich die absolute Prüfmenge mit wachsendem Datenbestand verändert; Selektivität und Datenmenge sind deshalb getrennt zu beobachten. | Verankert beide Variablen der Forschungsfrage vor ihrer Operationalisierung. | Datenbankgrundlage zu Selektivität; MongoDB-Dokumentation zu selektiven Queries. | Folge aus Zugriffsmechanismus. | Ursache → FO-02-P05. | 150 | keines | Belastbare Definition und Grenzen der Selektivitätsinterpretation auswählen. |
-| FO-02-P05 | Feldreihenfolge begründen | Bei Q1 beeinflussen Equality-Felder und Sortierung die Eignung eines Compound-Index; unterschiedliche Reihenfolgen sind daher Kandidaten, keine austauschbaren Varianten. | Leitet I1–I5 ohne Siegerannahme her. | MongoDB ESR-/Compound-Index-Dokumentation. | Anwendung. | Einschränkung → FO-02-P06. | 180 | keines | ESR ohne Überverallgemeinerung für die konkrete Equality-/Sortierquery erläutern. |
-| FO-02-P06 | Präfix und Redundanz einordnen | Ein Compound-Index kann bestimmte Präfixzugriffe unterstützen, ersetzt aber nicht automatisch jeden Einzelindex; Redundanz ist empirisch und workloadbezogen zu beurteilen. | Begründet die spätere Reduktionsstufe statt einer automatischen Löschung. | MongoDB Compound-Index-Präfixe; ggf. Literatur zu workload-basiertem Design. | Einschränkung. | Themenwechsel → FO-02-P07. | 140 | keines | Verifizierbare Quelle zur Präfixnutzung und ihren Grenzen auswählen. |
-| FO-02-P07 | Arrayzugriff erklären | Ein Index auf `tags` wird multikey; seine Nutzbarkeit für Q2 ist anhand von Arraysemantik und konkreten Filtern zu beurteilen. | Verbindet Q2 mit I6–I8, ohne ausgeschlossene Indexarten auszuführen. | MongoDB Multikey-Dokumentation. | Anwendung eines Sonderfalls. | Folge → FO-02-P08. | 140 | keines | Grenzen von Compound-Multikey-Indizes nur soweit für Q2 relevant prüfen. |
-| FO-02-P08 | Bedingte Indexierung erklären | Partial Indizes begrenzen Schlüsselmenge und Wartung nur unter passender Filterbedingung; sie dürfen nur für logisch berechtigte Queries verglichen werden. | Begründet die Eligibility-Regel für I5 und I8. | MongoDB Partial-Index-Dokumentation. | Kontrast. | Themenwechsel → FO-02-P09. | 150 | keines | Technische Zulässigkeit gleichartiger Full-/Partial-Key-Patterns bleibt bis zum Smoke-Test offen. |
-| FO-02-P09 | Eindeutigkeit und Lookup einordnen | Für den Detailabruf ist ein eindeutiger fachlicher Schlüssel zugleich Modellierungs- und Zugriffsentscheidung; der Unique-Index ist nicht mit einer allgemeinen `_id`-Empfehlung gleichzusetzen. | Begründet I9 und die nur konzeptionell behandelte `_id`-Alternative. | MongoDB Unique-Index-Dokumentation; Referenzschema. | Fortführung. | Voraussetzung → FO-02-P10. | 110 | keines | Quellen- und Modellbezug für `productId`-Eindeutigkeit präzisieren. |
-| FO-02-P10 | Messgrößen abgrenzen | `totalDocsExamined`, `totalKeysExamined`, `nReturned` und Planstufen beschreiben strukturellen Aufwand; wiederholte reale Queryzeiten ergänzen ihn, während Explain-Zeit und Plannerwahl keine direkte Siegerbehauptung erlauben. | Sichert die getrennte Bewertung in Kapitel 3 und 4 methodisch ab. | MongoDB Explain, Query Plans, Hint und Plan Cache. | Synthese. | Folge → FO-02-P11. | 160 | keines | Exakte Dokumentationsstellen zu Explain und Plan Cache erfassen. |
-| FO-02-P11 | Kosten und Kriterien synthetisieren | Indexauswahl ist eine Abwägung aus Leseaufwand, Speicher, bedingter Nutzbarkeit und Schreibwartung; daraus folgt das Kriterienraster für die Methode. | Verhindert die Reduktion auf eine einzelne Laufzeit. | MongoDB Write Performance/Indexing Strategies; ggf. workload-Auswahlliteratur. | Synthese. | Übergabe → Kapitel 3. | 130 | keines | Methodische Referenz für mehrdimensionale Bewertung auswählen. |
+| FO-02-P01 | Workloadbegriff definieren | Ein Workload besteht aus registrierten Query Shapes, konkreten Parametervarianten und Gewichten; Shape und experimenteller Parameterfall werden getrennt behandelt. | Schafft die Einheit, auf die Nutzen und Kosten später bezogen werden. | Literatur: workloadbasierte Indexauswahl; MongoDB-Primärdokumentation zum Query-Shape-Begriff. | Anschluss an Einleitung. | Konkretisierung → FO-02-P02. | 150 | M-FO-01 optional | Versionsgenaue Bedeutung von Query Shape und Abgrenzung zu Parametern verifizieren. |
+| FO-02-P02 | MongoDB-Zugriff und Messbeobachtung erklären | Indizes eröffnen dem Planner alternative Zugriffspfade; Explain-Strukturmetriken und separat gemessene Laufzeiten beleuchten unterschiedliche Aspekte eines Plans. | Begründet, warum Laufzeit, untersuchte Schlüssel/Dokumente, Fetch-/Sort-Stufen und Plannerwahl nicht gleichgesetzt werden dürfen. | MongoDB-Primärdokumentation zu Query Planner, `explain`, Planstufen und Messgrenzen. | Konkretisierung des Kostenbegriffs. | Anwendung → FO-02-P03. | 175 | keines | Exakte Felder und versionsabhängige Planstufen gegen die eingesetzte MongoDB-Version prüfen. |
+| FO-02-P03 | Compound-Regeln ableiten | Feldreihenfolge, ESR-Regel und nutzbare Compound-Präfixe bestimmen, welche Q1-Kandidaten Filter und Sortierung unterstützen und wo potenzielle Redundanz entsteht. | Leitet I1 bis I5 fachlich her, ohne einen Sieger zu behaupten. | MongoDB-Primärdokumentation zu Compound Indexes, Präfixen und ESR. | Anwendung. | Kontrast → FO-02-P04. | 165 | keines | ESR-Reichweite bei Equality plus absteigender Sortierung präzise und ohne Überverallgemeinerung belegen. |
+| FO-02-P04 | Partial-, Multikey- und Unique-Bedingungen erklären | Partial-Indizes sind nur bei logisch implizierter Filterbedingung zulässig, `tags` erzeugt Multikey-Semantik, und I9 erfüllt als Unique-Index eine Integritäts- statt Wahlfunktion. | Begründet Eligibility für I5/I8, die Kandidaten I6 bis I8 sowie die feste Basiskonfiguration mit I9. | MongoDB-Primärdokumentation zu Partial, Multikey und Unique Indexes; eigene Schemaentscheidung zu `productId`. | Kontrast und Erweiterung. | Synthese → FO-02-P05. | 170 | keines | Koexistenz der vorgesehenen Full-/Partial-Key-Patterns und relevante Multikey-Grenzen technisch verifizieren. |
+| FO-02-P05 | Auswahlproblem formalisieren | Aus einer festen Basiskonfiguration und optionalen Kandidaten entstehen zulässige Indexsets; Gewichte, Kosten und optionale Grenzen machen daraus ein endliches Index Selection Problem. | Verbindet den Workload mit der Mengenentscheidung und trennt Integritätsindizes von Optimierungsoptionen. | Wissenschaftliche Primärquellen: Chaudhuri/Narasayya, CoPhy und SWIRL; eigene formale Notation für `B` und `S`. | Abstraktion. | Erweiterung → FO-02-P06. | 170 | M-FO-01 optional | Exakte Fundstellen zu Workloadgewichten, Constraints und Konfigurationskosten erfassen. |
+| FO-02-P06 | Mehrzielbewertung erklären | Ein Set wird durch Read-Kosten, optionalen Speicher und Write-Aufwand beschrieben; Pareto-Dominanz entfernt nur Sets, die in keiner Dimension besser sind. | Vermeidet eine unbegründete Gesamtnote und bereitet getrennte Fronten je Skalierung vor. | Wissenschaftliche Literatur zu mehrzieliger Indexauswahl und Pareto-Begriff; eigene Auswahl der drei Zielgrößen. | Synthese. | Folge → FO-02-P07. | 160 | M-FO-01 optional | Prüfen, welche Quelle die Pareto-Anwendung im Indexdesign am direktesten stützt. |
+| FO-02-P07 | Schätzmodell begrenzen | Baseline-normalisierte Minimum-Einzelkosten sowie additive Speicher- und Write-Proxys ermöglichen vollständiges Screening, modellieren aber keine Indexinteraktionen oder natürliche Plannerentscheidungen. | Erklärt Nutzen und bewusste Unvollständigkeit des späteren Kostenmodells. | Index-Advisor-Literatur zur Kostenschätzung/What-if-Trennung; MongoDB-Dokumentation zu `hint()`, Query Settings und Hidden Indexes. | Einschränkung. | Folge → FO-02-P08. | 160 | keines | Fundstellen zur Reichweite von `allowedIndexes`, Hidden Indexes und `hint()` versionsgenau prüfen. |
+| FO-02-P08 | Konsequenz für Validierung synthetisieren | Weil Screening nur schätzt, müssen wenige regelbasiert gewählte Sets physisch materialisiert und ohne erzwungene Indexwahl gemessen werden; Empfehlungen bleiben kontextgebunden. | Schließt die Theorie mit der methodischen Notwendigkeit der Finalvalidierung. | Wissenschaftliche Literatur zur Trennung von Kostenschätzung und realer Ausführung; technische Dokumentation zur Plannerwahl. | Folge und Synthese. | Übergabe → Kapitel 3. | 150 | keines | Reichweite der herangezogenen relationalen Literatur klar von MongoDB-spezifischen Schlussfolgerungen trennen. |
 
-**Summe Zielwörter: 120 + 100 + 170 + 150 + 180 + 140 + 140 + 150 + 110 + 160 + 130 = 1.550.**
+**Summe Zielwörter: 150 + 175 + 165 + 170 + 170 + 160 + 160 + 150 = 1.300.**
 
 ## Medienplan
 
-Keine neue Tabelle im Grundlagenkapitel. Die konkrete Zuordnung von Query Shapes, Kandidaten und Messkriterien wird einmalig in Kapitel 3 dargestellt. Eine vorhandene B-Tree-Skizze bleibt nur optional, falls sie den Zugriffsmechanismus knapper als zusätzliche Prosa erklärt.
+| Medium-ID | Typ | Aussagefunktion | Herkunft/Erzeugung | Beschriftung | Einführung und Interpretation |
+| --- | --- | --- | --- | --- | --- |
+| M-FO-01 | Modellgrafik oder kompakte Tabelle, optional | Zeigt die Beziehungen zwischen Workload, Basiskonfiguration, optionalen Kandidaten, Set-Enumerator, Zielvektor, Pareto-Front und Finalvalidierung. | Eigene Synthese auf Basis der definierten Begriffe. | „Vom Query-Workload zum validierten Indexset“ | FO-02-P01 führt die Eingaben ein; FO-02-P06 bis P08 interpretieren Auswertung und Validierungsgrenze. Nur aufnehmen, wenn die Darstellung kompakter als Prosa ist. |
 
 ## Offene Entscheidungen
 
-- Keine Darstellung ausgeschlossener Indexarten außer einer knappen Scope-Erinnerung, falls nötig.
-- Der bestehende Grundlagenentwurf bleibt die Textbasis. Geplant sind nur die in der Manuskriptzuordnung genannten Korrekturen, Ergänzungen und Straffungen.
-- Smoke-Test-Ergebnis und konkrete Kandidatenleistungen gehören nicht in dieses Kapitel.
+- Bei der Tiefenrecherche ist je fachlicher Aussage eine überprüfbare Fundstelle zu erfassen; Scoping-Links allein genügen nicht.
+- Relationale Index-Advisor-Verfahren werden als Problem- und Methodikanschluss genutzt, nicht als Beleg für MongoDB-interne What-if-Fähigkeiten.
+- Nicht verwendete Indexarten, allgemeine NoSQL-Geschichte und ausführliche B-Tree-Details bleiben außerhalb des Kapitels.

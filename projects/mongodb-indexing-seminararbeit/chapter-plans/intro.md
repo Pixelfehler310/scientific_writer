@@ -1,13 +1,13 @@
-# Kapitelplan: intro Problemstellung und Untersuchungsziel
+# Kapitelplan: intro – Problem, Forschungsfrage und Beitrag
 
 ## Funktion im Gesamtargument
 
-Das Kapitel begrenzt das Praxisproblem auf drei ausgewählte Katalog-Lesezugriffe und begründet, warum eine gemeinsame, workload-basierte Indexkonfiguration untersucht wird. Es formuliert Forschungsfrage, Beitrag und Reichweite, ohne eine Indexentscheidung oder Messbefund vorwegzunehmen.
+Das Kapitel motiviert die Auswahl eines gemeinsamen Indexsets statt der isolierten Optimierung einzelner Abfragen. Es grenzt die Untersuchung auf einen festgelegten MongoDB-Workload, einen endlichen Kandidatenraum und drei Kostenperspektiven ein, ohne Ergebnisse oder geeignete Sets vorwegzunehmen.
 
 ## Teilfrage und erwartetes Ergebnis
 
-- **Teilfrage:** Rahmt alle vier Teilfragen; beantwortet noch keine davon.
-- **Erwartetes Ergebnis:** Ein klarer Untersuchungsauftrag: Kandidaten aus drei Query Shapes ableiten, im gemeinsamen Pool kontrolliert vergleichen, zu einem Kombiset reduzieren und dieses einschließlich begrenzter Speicher- und Schreibkosten gegen die Baseline prüfen.
+- **Teilfrage:** Rahmt alle vier Teilfragen, beantwortet sie aber noch nicht.
+- **Erwartetes Ergebnis:** Ein präzises Untersuchungsversprechen: Ein wiederverwendbarer Evaluator bewertet alle zulässigen Sets eines vorgegebenen Kandidatenraums; eine E-Commerce-Fallstudie prüft anschließend ausgewählte Sets physisch.
 
 ## Wortbudget
 
@@ -15,26 +15,25 @@ Das Kapitel begrenzt das Praxisproblem auf drei ausgewählte Katalog-Lesezugriff
 
 ## Voraussetzungen und Übergabe
 
-- **Voraussetzungen:** G1-Brief, G2-Scoping und G2-Gliederung; spätere Quellenprüfung der Storefront-Plausibilität und MongoDB-Grundsätze.
-- **Übergabe:** Benennt Query Shape, Feldreihenfolge, Selektivität, Datenmenge sowie Speicher- und Schreibkosten als die in Kapitel 2 zu begründenden Kriterien.
+- **Voraussetzungen:** freigegebene Forschungsfrage, Scope, Argumentationslinie und Wortbudget aus G2.
+- **Übergabe:** Kapitel 2 klärt die Begriffe und Regeln, die zur Formulierung des Auswahlproblems und zur späteren Bewertung benötigt werden.
 
 ## Absatzplan
 
 | Absatz-ID | Funktion | Kernaussage | Begründung | Evidenzbedarf | Beziehung davor | Beziehung danach | Zielwörter | Medium | Offene Recherche |
 | --- | --- | --- | --- | --- | --- | --- | ---: | --- | --- |
-| IN-01-P01 | Problemrahmung | Ein Produktkatalog muss mehrere unterschiedliche Lesezugriffe zugleich unterstützen; einzelne, isoliert gute Indizes ergeben daher noch keine begründete Gesamtkonfiguration. | Produktlisten, Tagfilter und Detailabrufe stellen verschiedene Zugriffsanforderungen. | Externe Plausibilisierung ausgewählter Storefront-Zugriffe; keine Häufigkeitsbehauptung. | Einstieg. | Ursache → IN-01-P02. | 85 | keines | Aktuelle, zitierfähige Storefront-Referenz für Filter, Sortierung und Produktzugriff prüfen. |
-| IN-01-P02 | Problempräzisierung | Indexeignung hängt von Query Shape, Selektivität, Datenmenge und Indexkosten ab; deshalb wird nicht nach einer abstrakt besten Indexart gesucht. | Filter, Sortierung, Arrayzugriff und fachliche ID stellen unterschiedliche Anforderungen; zusätzliche Indizes kosten Speicher und Schreibarbeit. | MongoDB-Dokumentation zu Indexstrategie und Schreibkosten; theoretische Grundlage. | Fortführung. | Folge → IN-01-P03. | 80 | keines | Belegstellen für Kosten- und Workloadbezug auswählen. |
-| IN-01-P03 | Untersuchungsansatz abgrenzen | Die Arbeit untersucht eine feste Produkt-Collection mit drei ausgewählten Query Shapes und leitet daraus Kandidaten sowie eine gemeinsame Ausgangskonfiguration ab. | Begrenzung schützt vor dem Anspruch eines repräsentativen Gesamtshops und macht Messung kontrollierbar. | Eigene Designentscheidung, durch Scoping plausibilisiert. | Konkretisierung. | Synthese → IN-01-P04. | 75 | keines | Keine; exakte Querydefinitionen erst in Kapitel 3 referenzieren. |
-| IN-01-P04 | Forschungsfrage und Leseanleitung | Die Haupt- und Teilfragen strukturieren die Ableitung, den Vergleich und die Validierung; Ergebnisreichweite und Kapitelabfolge werden knapp angekündigt. | Lesende benötigen ein prüfbares Versprechen und die Trennung von Theorie, Methode, Befunden und Schlussfolgerung. | Freigegebene Forschungsfrage und Gliederung; keine externe Evidenz. | Synthese. | Themenwechsel → Kapitel 2. | 110 | keines | Keine. |
+| IN-01-P01 | Praxisproblem eröffnen | Unterschiedliche Lesezugriffe eines Produktkatalogs können verschiedene Indizes begünstigen; die Summe lokal guter Einzelentscheidungen ist deshalb noch keine begründete Workload-Konfiguration. | Führt vom konkreten Anwendungsproblem zum Indexset statt zu einem Katalog von Indexarten. | Literatur: workloadbasierte Indexauswahl; MongoDB-Dokumentation zum Read-/Write-Trade-off. Keine Aussage über reale Shop-Häufigkeiten. | Einstieg. | Ursache → IN-01-P02. | 80 | keines | Belastbare Fundstelle für den allgemeinen Workloadbezug und die Kosten zusätzlicher Indizes bestimmen. |
+| IN-01-P02 | Entscheidungskonflikt präzisieren | Ein geeignetes Set muss Leseleistung, Speicherbedarf und Schreibaufwand gemeinsam berücksichtigen und gilt nur für den betrachteten Workload, Kandidatenraum und Messkontext. | Begründet Mehrzielbetrachtung und Aussagegrenzen, bevor die Forschungsfrage gestellt wird. | Literatur: Index Selection Problem und Constraints; technische Primärquelle zu Speicher-/Write-Kosten. | Fortführung. | Folge → IN-01-P03. | 90 | keines | Exakte wissenschaftliche Fundstellen werden in der Tiefenrecherche verifiziert. |
+| IN-01-P03 | Forschungsfrage und Vorgehen formulieren | Die Arbeit fragt nach einer nachvollziehbaren Auswahl und empirischen Überprüfung von Indexsets; sie trennt Einzelprofilierung und vollständige Enumeration von der physischen Finalvalidierung ohne `hint()`. | Macht Methode und Prüfidee verständlich, ohne Resultate vorwegzunehmen. | Eigene freigegebene Forschungsfrage und Methodenentscheidung; keine externe Evidenz für Designentscheidungen erforderlich. | Konkretisierung. | Folge → IN-01-P04. | 100 | keines | Keine. |
+| IN-01-P04 | Beitrag, Scope und Aufbau ankündigen | Ergebnis sind ein prototypischer Evaluator und eine bedingte Fallstudienempfehlung, nicht ein globaler MongoDB Index Advisor oder ein universell bestes Set. | Schärft Beitrag und Reichweite und führt durch Theorie, Methode, Evaluation und Fazit. | Eigene Scopeentscheidung; ggf. Atlas Performance Advisor nur zur funktionalen Abgrenzung. | Einschränkung und Synthese. | Themenwechsel → Kapitel 2. | 80 | keines | Prüfen, ob die Advisor-Abgrenzung in der Einleitung nötig ist oder ausschließlich in Kapitel 2 bleibt. |
 
-**Summe Zielwörter: 85 + 80 + 75 + 110 = 350.**
+**Summe Zielwörter: 80 + 90 + 100 + 80 = 350.**
 
 ## Medienplan
 
-Keine Medien. Bei 350 Wörtern würde ein Schema keine Information ergänzen; die Query Shapes werden in Kapitel 3 präzise tabellarisch dargestellt.
+Keine Medien. Die Modellbeziehungen werden in Kapitel 2 und der konkrete Ablauf in Kapitel 3 jeweils einmal dargestellt.
 
 ## Offene Entscheidungen
 
-- KI-gestützte Anwendungsentwicklung bleibt höchstens eine knappe Zusatzmotivation und erhält keinen eigenen Argumentationsabsatz.
-- Keine Aussage darüber, wie verbreitet Shops mit bestimmten Kataloggrößen sind.
-- Die Einleitung darf weder finale Indizes noch erwartete Leistungsgewinne nennen.
+- Die Einleitung nennt keine finalen Indexsets, erwarteten Leistungsgewinne oder vorläufigen Pilotbefunde.
+- Der Produktkatalog dient als kontrollierte Fallstudie; seine Größen und Querygewichte werden nicht als repräsentativ für reale Shops bezeichnet.
