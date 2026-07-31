@@ -54,7 +54,7 @@ institution:
   - Keine weiteren formalen Vorgaben bekannt.
 template:
   provider: fh_swf_written_work
-  source_root: C:/Users/simon/Documents/uni/fh_swf/schriftliche_Ausarbeitungen
+  source_root: null
   reference_root: .scientific-writing/template-reference
   working_root: seminararbeit
   lockfile: .scientific-writing/template-lock.yaml
