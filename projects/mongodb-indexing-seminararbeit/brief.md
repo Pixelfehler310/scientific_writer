@@ -16,14 +16,14 @@ Damit ist die Auswahl eines Indexsets ein begrenztes Mehrzielproblem: Für einen
 
 **Hauptforschungsfrage**
 
-Wie lässt sich für einen definierten MongoDB-Query-Workload aus einem endlichen Kandidatenpool ein geeignetes Indexset unter Berücksichtigung von Leseleistung, Indexspeicherbedarf und Schreibaufwand auswählen und empirisch validieren?
+Wie kann aus einem festgelegten MongoDB-Query-Workload und einer begrenzten Menge möglicher Indizes ein passendes Indexset ausgewählt und durch Messungen überprüft werden, wenn Leseleistung, Speicherbedarf und Schreibaufwand gemeinsam berücksichtigt werden?
 
 **Teilfragen**
 
-1. Wie werden ein MongoDB-Query-Workload, fachlich zulässige Indexkandidaten und messbare Kosten so operationalisiert, dass Indexsets reproduzierbar verglichen werden können?
-2. Wie lässt sich der endliche Konfigurationsraum unter optionalen Querygewichten und expliziten Ressourcen- oder Kardinalitätsgrenzen vollständig durchsuchen und als Pareto-Front auswerten?
-3. Welche Indexsets sind im definierten E-Commerce-Referenzworkload über die untersuchten Datenmengen und Selektivitäten nicht dominiert?
-4. Wie gut stimmen die aus Baseline- und Einzelindexmessungen geschätzten Setkosten mit der sauberen empirischen Validierung ausgewählter Finalisten überein, und welche bedingte Empfehlung folgt daraus?
+1. Wie lassen sich Workload, Indexkandidaten und Messgrößen so festlegen, dass verschiedene Indexsets nachvollziehbar und reproduzierbar verglichen werden können?
+2. Wie können alle möglichen Indexsets unter Berücksichtigung von Querygewichten und festgelegten Grenzen systematisch bewertet und nicht dominierte Lösungen ermittelt werden?
+3. Welche Indexsets sind im E-Commerce-Referenzworkload bei den untersuchten Datenmengen und Selektivitäten nicht dominiert, und wie stabil ist diese Auswahl?
+4. Wie gut sagen Baseline- und Einzelindexmessungen die tatsächliche Leistung ausgewählter Indexsets voraus, und welche Empfehlung lässt sich daraus für den Referenzworkload ableiten?
 
 ## Ziel und erwarteter Beitrag
 

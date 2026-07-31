@@ -1,7 +1,7 @@
 ﻿schema_version: 2
 paper:
   title: "Workload-basierte Auswahl und empirische Validierung von MongoDB-Indexsets"
-  research_question: "Wie lässt sich für einen definierten MongoDB-Query-Workload aus einem endlichen Kandidatenpool ein geeignetes Indexset unter Berücksichtigung von Leseleistung, Indexspeicherbedarf und Schreibaufwand auswählen und empirisch validieren?"
+  research_question: "Wie kann aus einem festgelegten MongoDB-Query-Workload und einer begrenzten Menge möglicher Indizes ein passendes Indexset ausgewählt und durch Messungen überprüft werden, wenn Leseleistung, Speicherbedarf und Schreibaufwand gemeinsam berücksichtigt werden?"
   language: de
   document_type: seminararbeit
   discipline: computer_science
@@ -17,8 +17,8 @@ submission:
   co_examiner_required: false
 word_budget:
   introduction: 350
-  theory: 1550
-  main_part: 2250
+  theory: 1300
+  main_part: 2500
   conclusion: 350
   tolerance_percent: 10
 paths:

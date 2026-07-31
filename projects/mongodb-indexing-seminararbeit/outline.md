@@ -6,125 +6,127 @@ Status: Durch G2 freigegeben.
 
 **Hauptforschungsfrage**
 
-Wie lässt sich für den Produktkatalog eines E-Commerce-Shops aus ausgewählten typischen Query Shapes unter Berücksichtigung von Selektivität und Datenmenge eine geeignete gemeinsame MongoDB-Indexkonfiguration ableiten und empirisch validieren?
+Wie kann aus einem festgelegten MongoDB-Query-Workload und einer begrenzten Menge möglicher Indizes ein passendes Indexset ausgewählt und durch Messungen überprüft werden, wenn Leseleistung, Speicherbedarf und Schreibaufwand gemeinsam berücksichtigt werden?
 
 **Teilfragen**
 
-1. Welche Query Shapes bilden einen begrenzten und fachlich plausiblen Referenzworkload für typische Lesezugriffe auf einen E-Commerce-Produktkatalog?
-2. Welche Indexkandidaten lassen sich aus den Filter-, Sortier-, Array- und Lookup-Anforderungen der einzelnen Query Shapes ableiten?
-3. Wie unterscheiden sich die Indexkandidaten bei variierender Datenmenge und – soweit relevant – Selektivität hinsichtlich strukturellem Abfrageaufwand, Ausführungszeit und Indexspeicherbedarf?
-4. Welche Kandidaten können unter Berücksichtigung von Compound-Präfixen, Redundanzen und bedingter Nutzbarkeit zu einer gemeinsamen Ausgangskonfiguration kombiniert werden, und wie bewährt sich diese gegenüber einer Baseline hinsichtlich Leseeffizienz, Indexspeicherbedarf und ausgewähltem indexbedingtem Schreibaufwand?
+1. Wie lassen sich Workload, Indexkandidaten und Messgrößen so festlegen, dass verschiedene Indexsets nachvollziehbar und reproduzierbar verglichen werden können?
+2. Wie können alle möglichen Indexsets unter Berücksichtigung von Querygewichten und festgelegten Grenzen systematisch bewertet und nicht dominierte Lösungen ermittelt werden?
+3. Welche Indexsets sind im E-Commerce-Referenzworkload bei den untersuchten Datenmengen und Selektivitäten nicht dominiert, und wie stabil ist diese Auswahl?
+4. Wie gut sagen Baseline- und Einzelindexmessungen die tatsächliche Leistung ausgewählter Indexsets voraus, und welche Empfehlung lässt sich daraus für den Referenzworkload ableiten?
 
 ## Argumentationslinie
 
-1. Ein Produktkatalog unterstützt mehrere wiederkehrende Lesezugriffe. Shopify-Storefront-Funktionen und ein historischer E-Commerce-Referenzworkload plausibilisieren gefilterte und sortierte Produktlisten, Tagfilter und Produktdetailabrufe, ohne Vollständigkeit oder repräsentative Häufigkeiten zu behaupten.
-2. MongoDBs Dokumentmodell bildet heterogene Produktattribute und Arrays gemeinsam ab. Die Eignung eines Indexes folgt jedoch nicht aus seinem Typ allein, sondern aus Query Shape, Feldreihenfolge, Selektivität, Datenmenge und gegebenenfalls einer Partial-Bedingung.
-3. Aus den drei festgelegten Query Shapes werden vor der Messung neun fachlich begründete Kandidaten abgeleitet. Die Theorie liefert damit Entwurfsregeln; sie nimmt keine Gewinner vorweg.
-4. Der Benchmark trennt fünf Funktionen: indexlose Baseline, wiederholte Hint-Vergleiche im gemeinsamen Kandidatenpool, natürliche Planner-Auswahl, Reduktion redundanter oder unterlegener Kandidaten und Abschlussvalidierung des finalen Kombisets.
-5. Explain-Metriken beschreiben den strukturellen Aufwand; separat gemessene Queryzeiten ergänzen ihn. Planner-Auswahl, tatsächliche Laufzeit und Indexeignung werden nicht gleichgesetzt.
-6. Die Reduktion berücksichtigt nicht nur query-spezifische Messwerte, sondern auch Compound-Präfixe, Indexgrößen und bedingte Nutzbarkeit. Dadurch entsteht eine gemeinsame Konfiguration statt einer ungeprüften Sammlung einzelner Empfehlungen.
-7. Eine begrenzte Insert-/Aktivstatus-Gegenprüfung quantifiziert den Schreibpreis des finalen Sets. Sie erweitert die Bewertung, ohne einen repräsentativen Schreibworkload zu behaupten.
-8. Die Antwort besteht aus einer empirisch validierten Ausgangskonfiguration für die Referenzstruktur und einem Entscheidungsleitfaden. Beide gelten nur für vergleichbare Daten- und Zugriffsmuster und müssen an einem realen Workload erneut geprüft werden.
+1. MongoDB-Indizes verbessern einzelne Lesezugriffe, verursachen aber Speicher- und Write-Kosten. Mehrere lokal günstige Einzelindizes bilden deshalb nicht automatisch ein geeignetes Workload-Set.
+2. Workloadbasierte Indexauswahl lässt sich als endliches Auswahlproblem formulieren: Querygewichte und geschätzte Kosten bestimmen den Read-Nutzen; Speicher, Write-Aufwand und Indexanzahl wirken als weitere Ziele oder Constraints.
+3. MongoDB-spezifische Eigenschaften wie Compound-Reihenfolge, Präfixe, Partial- und Multikey-Bedingungen begrenzen, welche Kandidaten für eine Query fachlich zulässig sind. Der Kandidatenpool muss vor der Ergebnisbetrachtung feststehen.
+4. Die Fallstudie operationalisiert diese Begriffe mit drei Query Shapes, fünf Parameterfällen, acht optionalen Kandidaten und I9 als verpflichtendem Unique-Index. Die Baseline besteht folglich aus `_id` und I9.
+5. Isolierte Baseline- und Einzelindexmessungen liefern je Skalierung ein normalisiertes Read-Kostenmodell sowie additive Speicher- und Write-Proxys. Die 256 optionalen Sets können vollständig enumeriert und ohne Heuristik als Pareto-Front ausgewertet werden.
+6. Das Screening ist bewusst unvollständig: Minimum-Einzelkosten bilden Indexinteraktionen, Cacheeffekte und natürliche Plannerentscheidungen nicht ab. Query Settings oder Hidden Indexes ersetzen keine physische Setmessung.
+7. Eine vorab festgelegte Regel wählt mit einem primären 10-%-Read-Band höchstens drei Pareto-Finalisten; zusätzliche 5-%- und 20-%-Bänder prüfen die Sensitivität dieser Wahl. Nur die primären Sets werden mit ausschließlich ihren Indizes, ohne `hint()` und aus äquivalenten Ausgangszuständen gemessen.
+8. Der Vergleich zwischen geschätzten und tatsächlichen Setkosten zeigt, wie tragfähig das vereinfachte Modell ist. Daraus folgen eine bedingte Empfehlung für die Fallstudie und Grenzen des wiederverwendbaren Evaluators.
 
 ## Wortbudget
 
 | Block | Kapitel | Zielwörter |
 | --- | --- | ---: |
-| Einleitung | 1 – Problemstellung und Untersuchungsziel | 350 |
-| Theorie/Grundlagen | 2 – Von Query Shapes zur Indexkonfiguration | 1.550 |
-| Hauptteil | 3 – Referenzworkload, Indexdesign und Benchmarkmethode | 850 |
-| Hauptteil | 4 – Kandidatenvergleich, Kombiset und Diskussion | 1.400 |
-| Fazit | 5 – Beantwortung der Forschungsfrage | 350 |
+| Einleitung | 1 – Problem, Forschungsfrage und Beitrag | 350 |
+| Theorie/Grundlagen | 2 – Workloadbasierte Auswahl von MongoDB-Indexsets | 1.300 |
+| Hauptteil | 3 – Evaluator und empirisches Untersuchungsdesign | 1.200 |
+| Hauptteil | 4 – Pareto-Ergebnisse, Finalvalidierung und Diskussion | 1.300 |
+| Fazit | 5 – Antwort und Reichweite | 350 |
 | **Gesamt** |  | **4.500** |
 
-Die Zielwörter betreffen den Fließtext der fünf vorhandenen Manuskriptkapitel. Literaturverzeichnis, Verzeichnisse und Anhänge werden mangels abweichender Hochschulvorgabe nicht in das Planbudget eingerechnet. Der mündlich genannte Zielumfang von 4.000 Wörtern und die nicht dokumentierte formale Toleranz bleiben als Randbedingung bestehen.
-
-Der bestehende Grundlagenentwurf umfasst näherungsweise 1.613 Wörter. Das neue Ziel von 1.550 Wörtern verlangt nur eine moderate Straffung. Frei werdender Raum und der erhöhte Hauptteilumfang werden für Kandidatendesign, Kombisetvalidierung und Schreibkostenprüfung verwendet. Der vorhandene Methodik- und Ergebnistext wird wegen des neuen Experiments nicht als belastbarer Zielwortstand behandelt.
+Das Budget umfasst den Fließtext der fünf Manuskriptkapitel. Literaturverzeichnis, Verzeichnisse und Anhänge werden mangels abweichender Hochschulvorgabe nicht eingerechnet. Gegenüber der alten Planung wandern 250 Wörter aus dem Grundlagenblock in die Methodik: Die neue Arbeit benötigt weniger katalogartige Indexerklärung, aber deutlich mehr Raum für Kostenmodell, Enumeration, Pareto-Regel und Finalvalidierung.
 
 ## Kapitel
 
-### intro – Problemstellung und Untersuchungsziel
+### intro – Problem, Forschungsfrage und Beitrag
 
-- **Vorgesehene Unterstruktur:** typische Katalogzugriffe und praktische Relevanz; MongoDB als Dokumentdatenbank für die Referenzstruktur; Problem workload-bezogener Indexauswahl; Forschungsfragen, Beitrag und Aufbau.
-- **Funktion:** Führt direkt von plausiblen E-Commerce-Zugriffen zur Notwendigkeit einer gemeinsamen, empirisch validierten Indexkonfiguration.
-- **Teilfragen:** Rahmt alle Teilfragen, beantwortet sie aber noch nicht.
-- **Erwartetes Ergebnis:** Klar begrenztes Untersuchungsversprechen: drei Query Shapes, query-spezifische Kandidaten, Reduktion zum Kombiset sowie Lese-, Speicher- und begrenzte Schreibkostenbewertung.
-- **Voraussetzungen:** Bestätigter G1-Brief; Scoping-Belege zur Plausibilität der Query Shapes; kurze MongoDB-Begründung. KI bleibt optionaler Nebenmotivator.
-- **Übergabe an Folgekapitel:** Benennt Query Shape, Selektivität, Datenmenge, Feldreihenfolge und Indexkosten als theoretisch zu klärende Kriterien.
+- **Unterstruktur:** praktische Indexset-Entscheidung; Forschungslücke im begrenzten MongoDB-Kontext; Forschungsfrage und Teilfragen; zwei Arbeitsergebnisse; Aufbau.
+- **Funktion:** Motiviert die Auswahl eines Sets statt den isolierten Vergleich einzelner Indizes.
+- **Teilfragen:** Rahmt alle Teilfragen.
+- **Erwartetes Ergebnis:** Präzises Untersuchungsversprechen mit klarer Begrenzung auf Workload, Kandidatenraum, Daten, Messumgebung und Kostenmodell.
+- **Voraussetzungen:** freigegebener G1-Brief; Scoping zur workloadbasierten Auswahl und funktionalen Abgrenzung zum Atlas Performance Advisor.
+- **Übergabe:** Benennt die Begriffe und Zielgrößen, die Kapitel 2 formal und MongoDB-spezifisch klärt.
 - **Zielwörter:** 350.
-- **Evidenzbedarf:** Shopify-Storefront-Dokumentation; MongoDB-Datenmodell und Indexing Strategies; workload-basierte Indexauswahl.
-- **Praktische Artefakte:** Keine.
-- **Medien:** Keine.
+- **Evidenzbedarf:** klassische Index-Advisor-Forschung; MongoDB Write-/Storage-Trade-off; begrenzte E-Commerce-Plausibilisierung.
+- **Praktische Artefakte:** keine.
+- **Medien:** keine.
 
-### foundations – Von Query Shapes zur Indexkonfiguration
+### foundations – Workloadbasierte Auswahl von MongoDB-Indexsets
 
-- **Vorgesehene Unterstruktur:** 2.1 Dokumentmodell und Zugriffsmuster; 2.2 geordneter Indexzugriff, Query Planner, Hint und Explain; 2.3 Feldreihenfolge, Compound-Präfixe, Selektivität, Multikey, Partial und Unique; 2.4 Lese-/Schreib-/Speicher-Trade-off.
-- **Funktion:** Entwickelt die Kriterien, aus denen der Kandidatenpool und seine Bewertungslogik nachvollziehbar folgen.
-- **Teilfragen:** Begründet Teilfrage 1 und beantwortet Teilfrage 2 konzeptionell; schafft die Metrikgrundlage für Teilfragen 3 und 4.
-- **Erwartetes Ergebnis:** Ein kompaktes Kriterienraster „Queryanforderung – Kandidatenmerkmal – erwartete Planwirkung – mögliche Kosten“.
-- **Voraussetzungen:** Festgelegte Query Shapes; MongoDB-8.2-Dokumentation; B-Tree- und workload-basierte Grundlagen.
-- **Übergabe an Folgekapitel:** Die Kriterien werden in Kapitel 3 auf Q1 bis Q3 angewandt und als konkrete Kandidatenmatrix operationalisiert.
-- **Zielwörter:** 1.550. Der bestehende Entwurf wird fachlich korrigiert und um ungefähr 60 Wörter gestrafft; ein katalogartiger Überblick nicht verwendeter Indexarten entfällt.
-- **Evidenzbedarf:** B-Tree-Grundlage; Query Shapes; Compound/ESR/Präfixe; Multikey; Partial; Unique; Hint, Explain, Plan Cache; Write Operation Performance; mehrdimensionale Indexauswahl.
-- **Praktische Artefakte:** Query- und Indexdefinitionen zur Konsistenzprüfung, noch keine neuen Ergebnisse.
-- **Medien:** Höchstens eine kompakte Kriterienmatrix, falls sie Prosa ersetzt.
+- **Unterstruktur:** 2.1 Query Workload, Query Shape und Gewichte; 2.2 MongoDB-Indexzugriff, Planner und Explain; 2.3 Compound-Präfixe, ESR, Partial-, Multikey- und Unique-Eigenschaften; 2.4 Index Selection Problem, Constraints und Pareto-Dominanz; 2.5 Grenzen von Kostenschätzung und MongoDB-Screeningmechanismen.
+- **Funktion:** Liefert genau die Begriffe und Regeln, aus denen Kandidatenraum, Kostenmodell und Auswertungslogik folgen.
+- **Teilfragen:** begründet Teilfragen 1 und 2 konzeptionell.
+- **Erwartetes Ergebnis:** Ein Modell, das Workload, Kandidatenmenge, Pflichtindizes, Set, gewichtete Read-Kosten, Speicher, Write-Aufwand, Constraints und Dominanz sauber unterscheidet.
+- **Voraussetzungen:** G1-Scope und verifizierte wissenschaftliche sowie technische Primärquellen.
+- **Übergabe:** Kapitel 3 instanziiert das Modell als Evaluator und E-Commerce-Experiment.
+- **Zielwörter:** 1.300. Der vorhandene Grundlagenentwurf wird deutlich fokussiert; nicht verwendete Indexarten und allgemeine MongoDB-Einführungen entfallen.
+- **Evidenzbedarf:** Chaudhuri/Narasayya; CoPhy oder SWIRL; MongoDB-Dokumentation zu Query Shapes, Compound/ESR, Partial, Multikey, Unique, Explain, Query Settings, Hidden Indexes und Write Performance.
+- **Praktische Artefakte:** Begriffs- und Formelkonsistenz mit der späteren Workloadkonfiguration.
+- **Medien:** eine kleine Modellgrafik oder Tabelle nur dann, wenn sie die Beziehungen zwischen Workload, Kandidatenprofilen, Enumerator, Pareto-Front und Finalvalidierung kompakter als Prosa zeigt.
 
-### method – Referenzworkload, Indexdesign und Benchmarkmethode
+### method – Evaluator und empirisches Untersuchungsdesign
 
-- **Vorgesehene Unterstruktur:** 3.1 Referenzdokument, Datenverteilungen und drei Query Shapes; 3.2 Herleitung und Installation des Kandidatenpools; 3.3 Baseline-, Hint-, Planner-, Reduktions- und Finallauf; 3.4 Metriken, tatsächliche Queryzeit und Schreibkostenprüfung; 3.5 Umgebung und Reproduzierbarkeit.
-- **Funktion:** Übersetzt die Forschungsfragen in ein kontrolliertes Verfahren und dokumentiert die Indexentscheidung vor Kenntnis der neuen Ergebnisse.
-- **Teilfragen:** Operationalisiert alle vier Teilfragen.
-- **Erwartetes Ergebnis:** Reproduzierbare Versuchsmatrix mit fünf Messstufen, neun Kandidaten, drei Skalen, relevanten Selektivitätsvarianten und einer begrenzten Schreibgegenprüfung.
-- **Voraussetzungen:** Kriterienraster aus Kapitel 2; überarbeiteter Benchmarkcode; erfolgreicher Smoke-Test für Kandidatenpool und Hints.
-- **Übergabe an Folgekapitel:** Legt Berichtsreihenfolge und Auswahlkriterien fest, sodass Kapitel 4 keine nachträglich erfundene Siegerlogik verwendet.
-- **Zielwörter:** 850.
-- **Evidenzbedarf:** Methodische Benchmarkquelle; MongoDB-Dokumentation zu Hint, Explain, Plan Cache, Partial-Eignung und Write Performance; eigene technische Artefakte.
-- **Praktische Artefakte:** Generator, Query- und Indexregistries, Kandidatenmatrix, Benchmarkrunner, Tests, Manifest, Rohdaten und Write-Messartefakte.
-- **Medien:** Eine Versuchsmatrix und optional ein kurzer Ablauf als nummerierte Folge; keine längeren Codeblöcke.
+- **Unterstruktur:** 3.1 Eingabemodell des Evaluators; 3.2 Referenzworkload, Daten und Kandidaten; 3.3 isolierte Profilierung und Messkontrollen; 3.4 normalisiertes Read-Modell, Speicher-/Write-Proxys und Enumeration; 3.5 Pareto- und Finalistenregel; 3.6 physische Finalvalidierung und Reproduzierbarkeit.
+- **Funktion:** Operationalisiert alle Forschungsfragen vor Kenntnis der neuen Ergebnisse.
+- **Teilfragen:** beantwortet Teilfragen 1 und 2 methodisch und schafft die Messbasis für Teilfragen 3 und 4.
+- **Erwartetes Ergebnis:** Vollständig spezifiziertes Verfahren mit `B = {_id, I9}`, 256 optionalen Sets, getrennten Skalenfronten, deterministischen Tie-Breakern und höchstens drei Finalisten.
+- **Voraussetzungen:** Kapitel-2-Modell; implementierter und getesteter Evaluator; erfolgreiche Smoke-Tests für Workloadvarianten, Partial-Hints, Indexzustände und Ergebnisvalidierung.
+- **Übergabe:** Kapitel 4 kann Screening- und Finalergebnisse berichten, ohne Auswahlregeln nachträglich zu verändern.
+- **Zielwörter:** 1.200.
+- **Evidenzbedarf:** Benchmarkmethodik; MongoDB Explain-/Hint-/Write-Dokumentation; eigene versionierte Konfigurationen und Artefakte.
+- **Praktische Artefakte:** Workload- und Indexdefinitionen, Profiler, Kostenmatrix, Enumerator, Pareto-/Constraint-Auswertung, Finalistenauswahl, Runner, Tests und Manifeste.
+- **Medien:** eine Versuchsmatrix und ein kompakter Ablauf von Profilierung über Enumeration zur Finalvalidierung.
 
-### evaluation – Kandidatenvergleich, Kombiset und Diskussion
+### evaluation – Pareto-Ergebnisse, Finalvalidierung und Diskussion
 
-- **Vorgesehene Unterstruktur:** 4.1 Baseline und Kandidatenvergleich für Q1; 4.2 Q2 und Q3; 4.3 natürliche Planner-Auswahl; 4.4 Reduktion und finale gemeinsame Konfiguration; 4.5 workloadweite Lesevalidierung und Schreibkostenprüfung; 4.6 Einordnung, Übertragbarkeit und Limitationen.
-- **Funktion:** Berichtet zunächst die query-spezifischen Befunde und führt sie anschließend zu einer gemeinsamen, tatsächlich getesteten Indexaufstellung zusammen.
-- **Teilfragen:** Beantwortet Teilfrage 3 empirisch und Teilfrage 4 durch Reduktion, Finallauf und Schreibgegenprüfung; synthetisiert die konzeptionellen Antworten aus Teilfragen 1 und 2.
-- **Erwartetes Ergebnis:** Pro Query nachvollziehbare Kandidatenbefunde; Vergleich zwischen kontrolliert bestem Zugriffspfad und natürlicher Planner-Auswahl; exakte finale `createIndex`-Definitionen; Gesamtindexgröße; Baselinevergleich aller Queries; quantifizierter Insert-/Update-Mehraufwand; bedingte Handlungsempfehlungen.
-- **Voraussetzungen:** Neuer erfolgreicher Benchmarklauf mit sauberer Artefaktzuordnung und vollständiger Ergebnisvalidierung.
-- **Übergabe an Folgekapitel:** Liefert die verdichtete Konfiguration, Auswahlregeln und Grenzen für das Fazit.
-- **Zielwörter:** 1.400.
-- **Evidenzbedarf:** Eigene Mess- und Explain-Daten; MongoDB-Dokumentation für Planinterpretation und Kosten; Literatur zur workload-basierten Auswahl und Benchmarkvalidität.
-- **Praktische Artefakte:** Baseline-, Hint-, Planner- und Finallaufdaten, Indexgrößen, Write-Messungen, Manifest und Registry.
-- **Medien:** Je eine verdichtete Kandidatengrafik für Q1 und Q2, eine kompakte Tabelle für Q3/Planner-Auswahl sowie eine zentrale Tabelle der finalen Konfiguration mit Lese-, Speicher- und Schreibtrade-offs. Nur Medien mit eigener Aussagefunktion werden übernommen.
+- **Unterstruktur:** 4.1 Qualität und Plausibilität der Kandidatenprofile; 4.2 Pareto-Fronten und Skalenwechsel; 4.3 regelbasierte Finalistenauswahl und Sensitivität der 5-/10-/20-%-Bänder; 4.4 tatsächliche Read-, Speicher- und Write-Ergebnisse; 4.5 Schätzung gegen Messung; 4.6 Empfehlung, Übertragbarkeit und Limitationen.
+- **Funktion:** Trennt Screening-Ergebnisse von belastbarer Setmessung und führt beide zur Antwort zusammen.
+- **Teilfragen:** beantwortet Teilfrage 3 durch die Fronten und Teilfrage 4 durch Finalvalidierung und Modellabweichung.
+- **Erwartetes Ergebnis:** Nicht dominierte Sets je Skalierung; Stabilität oder Wechsel der Kompromisssets über 5 %, 10 % und 20 % Read-Toleranz; bis zu drei nach dem primären 10-%-Band ausgewählte Finalisten; gemessene Plannerwahl und Kosten; Abweichung des Screening-Modells; bedingte Empfehlung für den Referenzworkload.
+- **Voraussetzungen:** vollständige Rohdaten, erfolgreiche Ergebnisvalidierung, dokumentierte Messumgebung und unveränderte Auswahlregeln.
+- **Übergabe:** Verdichtet Methode, Setempfehlung und Geltungsgrenzen für das Fazit.
+- **Zielwörter:** 1.300.
+- **Evidenzbedarf:** primär eigene Messdaten; technische Dokumentation zur Planinterpretation; wissenschaftliche Literatur zur Begrenztheit kostenbasierter Empfehlungen.
+- **Praktische Artefakte:** Kostenmatrix, Pareto-Tabellen, Finalistenmanifeste, Explain-Daten, reale Laufzeiten, Indexgrößen, Insert-/Update-Messungen und Schätzungsfehler.
+- **Medien:** eine Pareto-Darstellung pro sinnvoll zusammenfassbarer Skalengruppe, eine Finalistentabelle und eine Schätzung-vs.-Messung-Grafik. Keine separaten Diagramme ohne eigenständige Aussage.
 
-### conclusion – Beantwortung der Forschungsfrage
+### conclusion – Antwort und Reichweite
 
-- **Vorgesehene Unterstruktur:** direkte Antwort; konkrete Ausgangskonfiguration und Entscheidungsleitfaden; Reichweite und kurzer Ausblick.
-- **Funktion:** Beantwortet die Hauptforschungsfrage ohne neue Quellen oder Messergebnisse.
-- **Teilfragen:** Verdichtet alle vier Teilantworten.
-- **Erwartetes Ergebnis:** Aussage, wie aus Query Shapes Kandidaten entstehen, wie Messung und Reduktion zum Kombiset führen und unter welchen Bedingungen dieses auf ähnliche Kataloge übertragbar ist. Der gemessene Schreibpreis bleibt sichtbar.
-- **Voraussetzungen:** Freigegebene Interpretation und finale Konfigurationsmatrix.
-- **Übergabe an Folgekapitel:** Keine.
+- **Unterstruktur:** direkte Antwort auf die Forschungsfrage; methodischer Beitrag des Evaluators; bedingte Fallstudienempfehlung; Grenzen und kurzer Ausblick.
+- **Funktion:** Beantwortet die Forschungsfrage ohne neue Evidenz.
+- **Teilfragen:** synthetisiert alle vier Teilantworten.
+- **Erwartetes Ergebnis:** Aussage, wann das Verfahren ein geeignetes Set identifiziert, wie zuverlässig das Screening war und welche erneute Profilierung bei anderen Workloads erforderlich bleibt.
+- **Voraussetzungen:** freigegebene Interpretation aus Kapitel 4.
+- **Übergabe:** keine.
 - **Zielwörter:** 350.
-- **Evidenzbedarf:** Ausschließlich bereits geprüfte Evidenz aus Kapitel 4.
-- **Praktische Artefakte:** Keine neuen.
-- **Medien:** Keine.
+- **Evidenzbedarf:** ausschließlich bereits geprüfte Evidenz und eigene Ergebnisse.
+- **Praktische Artefakte:** keine neuen.
+- **Medien:** keine.
 
-## Festgelegte Strukturentscheidungen
+## Festgelegte G2-Methodenentscheidungen
 
-- Die vorhandene Fünf-Kapitel-Struktur bleibt bestehen.
-- Drei Query Shapes bilden den maximalen Referenzworkload; Q1 ist der Schwerpunkt.
-- Indexarten werden nur erklärt, soweit sie konkrete Kandidaten begründen.
-- Alle Kandidaten werden gemeinsam installiert, aber query-spezifisch wiederholt per Hint kontrolliert.
-- Die natürliche Planner-Auswahl und der Hint-Vergleich sind getrennte Ergebnisse.
-- Erst die reduzierte Konfiguration wird ohne Hint als Kombiset validiert.
-- Die Schreibgegenprüfung umfasst nur standardisierten Batch-Insert und Aktivstatus-Update bei einer repräsentativen Skalierung.
-- „Anwendungseffizienz“ wird nicht pauschal behauptet; die Arbeit bewertet Leseeffizienz, Indexspeicher und ausgewählten Schreibaufwand des Referenzworkloads.
-- Der alte Seminar-Lauf bleibt Pilotartefakt; die finale Argumentation verwendet einen neuen Lauf.
+- Hauptgegenstand ist die allgemeine Methode; der Produktkatalog bleibt Fallstudie.
+- I1 bis I8 sind optional, I9 und `_id` bilden die feste Basiskonfiguration.
+- Q1 und Q2 besitzen je zwei gleich gewichtete Parameterfälle; Q3 erhält ein Drittel des Shape-Gewichts.
+- Read-Kosten werden je Skalierung anhand baseline-normalisierter Medianzeiten berechnet; absolute Zeiten und Explain-Metriken bleiben sichtbar.
+- Kandidaten werden physisch als `B ∪ {i}` profiliert; `hint()` isoliert nur zulässige Einzelpfade.
+- Speicher und Write-Aufwand werden im Screening additiv geschätzt und ausdrücklich als Proxys bezeichnet.
+- Alle 256 optionalen Sets werden vollständig enumeriert.
+- Pareto-Fronten werden getrennt je Skalierung gebildet; Skalen werden nicht zu einer einzigen Zielfunktion vermischt.
+- Die Basiskonfiguration wird separat validiert. Read-Anker, Speicher- und Write-Kompromiss werden mit einer vorab festgelegten primären 10-%-Read-Toleranz und deterministischen Tie-Breakern gewählt; Duplikate führen zu weniger als drei Finalisten.
+- Eine rechnerische Sensitivitätsanalyse wiederholt die beiden Kompromissauswahlen mit 5 % und 20 %. Abweichende Sets werden berichtet, aber weder opportunistisch nachnominiert noch zusätzlich physisch validiert.
+- Finalisten werden ausschließlich physisch materialisiert und ohne `hint()` gemessen.
+- Vorgesehen sind drei Warmups und zehn Read-Wiederholungen sowie fünf Wiederholungen der 1.000er Insert- und Aktivstatus-Update-Batches bei 500.000 Dokumenten.
+- Der alte Lauf vom 24.07.2026 bleibt Pilot und wird nicht als Evidenz für die neue Forschungsfrage verwendet.
 
-## Noch nicht vorweggenommene Ergebnisentscheidungen
+## Nicht vorweggenommene Ergebnisse
 
-- Welcher Q1-Kandidat die beste Abwägung bildet.
-- Ob der einzelne Kategorieindex trotz Compound-Präfix einen messbar gerechtfertigten Zusatznutzen besitzt.
-- Ob Q2 einen vollständigen, Compound- oder Partial-Multikey-Index rechtfertigt.
-- Ob MongoDB im vollständigen Pool denselben Kandidaten auswählt, der im Hint-Vergleich dominiert.
-- Welche genaue gemeinsame Indexkonfiguration nach Reduktion bestehen bleibt.
-- Wie groß der gemessene Lesegewinn und der Insert-/Update-Mehraufwand tatsächlich sind.
+- welche Sets auf den drei Pareto-Fronten liegen;
+- ob sich die Front mit Skalierung oder Selektivität ändert;
+- welche Kandidaten MongoDB innerhalb materialisierter Sets tatsächlich verwendet;
+- ob die drei Auswahlrollen unterschiedliche Sets ergeben;
+- wie stark Einzelindexschätzung und reale Setleistung voneinander abweichen;
+- welche bedingte Empfehlung schließlich gerechtfertigt ist.

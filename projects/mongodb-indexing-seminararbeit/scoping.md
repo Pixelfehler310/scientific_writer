@@ -1,20 +1,38 @@
 # Scoping-Recherche
 
-Stand: 31.07.2026. Durch G2 freigegebenes Scoping nach Freigabe des workload-basierten Forschungsauftrags. Die Notizen prüfen Plausibilität, fachliche Tragfähigkeit und praktische Machbarkeit. Sie ersetzen weder die spätere Tiefenrecherche noch die Belegprüfung einzelner Manuskriptaussagen.
+Stand: 31.07.2026. Durch G2 freigegebenes Scoping nach G1-Neuausrichtung. Diese Notizen prüfen Begriffe, Forschungsanschluss und Machbarkeit. Sie ersetzen weder Tiefenrecherche noch Quellensteckbriefe oder die spätere Belegprüfung.
 
-## Ergebnis der Neuausrichtung
+## Ergebnis des Scopings
 
-Die Arbeit vergleicht nicht länger vier Indexstrategien in weitgehend getrennten Demonstrationsszenarien. Untersuchungsgegenstand ist ein gemeinsamer Referenzworkload auf einer festen Produkt-Collection. Für jede Query Shape werden vor dem neuen Benchmark fachlich plausible Kandidaten hergeleitet. Alle Kandidaten werden als Pool installiert, query-spezifisch kontrolliert und anschließend auf eine gemeinsame Ausgangskonfiguration reduziert. Erst die reduzierte Konfiguration wird als Gesamtheit gegen die Baseline validiert und einem begrenzten Schreibkostentest unterzogen.
+Die neue Forschungsfrage ist wissenschaftlich und praktisch bearbeitbar, wenn drei Ebenen strikt getrennt werden:
 
-Diese Ausrichtung entspricht dem Grundgedanken workload-basierter physischer Datenbankgestaltung: Eine Indexkonfiguration wird aus einem festgelegten Zugriffsmuster und nicht aus einer abstrakten Rangfolge von Indexarten abgeleitet. Chaudhuri und Narasayya (1997) liefern dafür den klassischen Forschungsbezug; Kossmann et al. (2020) stützen die mehrdimensionale Bewertung und die empirische Kontrolle von Empfehlungen. Die relationale Implementierung dieser Arbeiten wird nicht auf MongoDB übertragen, wohl aber das Prinzip der workload- und kostenbezogenen Auswahl.
+1. **Kandidatenprofilierung:** Baseline und einzelne optionale Indizes liefern ein vereinfachtes Kostenmodell.
+2. **Indexset-Suche:** Alle 256 Teilmengen von I1 bis I8 werden rechnerisch bewertet; I9 ist fester Integritätsindex.
+3. **Finalvalidierung:** Höchstens drei vorab regelbasiert ausgewählte Sets werden physisch isoliert und ohne `hint()` gemessen.
 
-## Abgrenzung des Referenzworkloads
+Die Arbeit entwickelt damit keinen globalen MongoDB Index Advisor. Sie untersucht ein endliches Index Selection Problem und realisiert einen wiederverwendbaren Evaluator für registrierte, ausführbare Query Shapes und vorgegebene Kandidaten.
 
-Shopifys aktuelle Storefront API stellt paginierte Produktlisten, Filter unter anderem nach Verfügbarkeit, Kategorie, Preis und Tags sowie Sortierschlüssel einschließlich Preis bereit. Dies plausibilisiert die ausgewählten Abfragebestandteile, beweist aber keine universelle Häufigkeitsverteilung. TPC-W enthält historisch Katalog-Browse- und Produktdetailzugriffe, ist seit 2005 obsolet und dient nur als zusätzliche Plausibilisierung.
+## Forschungsanschluss
 
-Die Arbeit verwendet deshalb die begrenzte Formulierung **„ausgewählte typische Query Shapes eines E-Commerce-Produktkatalogs“**. Weder die drei Queries noch ihre Häufigkeiten bilden einen repräsentativen Gesamtshop ab. Bestellungen, Warenkörbe, Kundenkonten, Volltextsuche und administrative Analysen bleiben ausgeschlossen.
+Chaudhuri und Narasayya (VLDB 1997) beschreiben die workload- und kostengetriebene Auswahl eines Indexsets, die Reduktion des Kandidatenraums und eine günstige Bewertung vieler Konfigurationen. CoPhy formalisiert große Kandidatenräume mit harten und weichen Constraints als Optimierungsproblem. SWIRL stellt das Index Selection Problem mit gewichteten Querykosten sowie Speicher- oder Kardinalitätsgrenzen dar; DRLISA überträgt workloadabhängige Auswahl auf NoSQL-Systeme mittels Deep Reinforcement Learning.
 
-### Q1 – Aktive Produktliste einer Kategorie
+Diese Arbeiten begründen Problemformulierung, Gewichte, Constraints und die Trennung von Kostenschätzung und materialisierter Leistung. Ihre relationalen What-if-Mechanismen beziehungsweise lernenden Suchverfahren werden nicht auf MongoDB übertragen. Für acht optionale Kandidaten ist vollständige Enumeration mit 256 Sets nachvollziehbarer als lineare Optimierung, Reinforcement Learning oder genetische Suche.
+
+Der MongoDB Atlas Performance Advisor bildet eine funktionale Nachbarschaft, aber kein identisches Werkzeug: Er gruppiert langsame Operationen nach Query Shape, bewertet Vorschläge anhand eines Impact-Maßes und dedupliziert Präfixüberschneidungen. Aus der öffentlichen Dokumentation folgt keine vollständige mehrdimensionale Indexset-Suche mit materialisierter Finalvalidierung.
+
+Orientierende Kernquellen:
+
+- Chaudhuri/Narasayya, *An Efficient, Cost-Driven Index Selection Tool for Microsoft SQL Server*: https://www.microsoft.com/en-us/research/publication/an-efficient-cost-driven-index-selection-tool-for-microsoft-sql-server/
+- CoPhy: https://arxiv.org/abs/1104.3214
+- SWIRL: https://openproceedings.org/2022/conf/edbt/paper-37.pdf
+- DRLISA: https://arxiv.org/abs/2006.08842
+- MongoDB Atlas Performance Advisor, Index Ranking: https://www.mongodb.com/docs/atlas/performance-advisor/index-ranking/
+
+## Referenzworkload
+
+Die Fallstudie nutzt eine Collection `products` und fünf konkrete Queryvarianten aus drei gleich gewichteten Query Shapes:
+
+### Q1 – Aktive Produkte einer Kategorie
 
 ```javascript
 db.products.find({
@@ -23,12 +41,9 @@ db.products.find({
 }).sort({ price: -1 }).limit(24)
 ```
 
-- **Aussagefunktion:** zentrale Storefront-Listenabfrage mit zwei Equality-Feldern, Sortierung und begrenzter Ausgabe.
-- **Variationen:** häufige und seltene Kategorie; 10.000, 100.000 und 500.000 Dokumente.
-- **Prüfziel:** Filterabdeckung, Sortierunterstützung, Compound-Feldreihenfolge, Partial-Index-Eignung und Präfixredundanz.
-- **Grenze:** `limit(24)` ist eine festgelegte experimentelle Seitengröße, keine als Branchenstandard behauptete Zahl.
+Q1 besitzt eine häufige und eine seltene Parametervariante. Geprüft werden Equality-Felder, Sortierunterstützung, Compound-Reihenfolge, Partial-Eignung und Präfixredundanz.
 
-### Q2 – Aktive Produktliste nach Tag
+### Q2 – Aktive Produkte mit Tag
 
 ```javascript
 db.products.find({
@@ -37,12 +52,9 @@ db.products.find({
 }).limit(24)
 ```
 
-- **Aussagefunktion:** Arrayfilterung auf einem Produktmerkmal mit zusätzlichem Aktivitätsprädikat.
-- **Variationen:** häufiges und selektiveres Tag; dieselben drei Datenmengen.
-- **Prüfziel:** Wirkung eines automatisch entstehenden Multikey-Index, zusätzlicher Equality-Schlüssel und partielle Begrenzung.
-- **Grenze:** Ohne explizite Sortierung sind unterschiedliche, aber logisch gültige Teilmengen möglich. Verglichen werden deshalb Ergebnisanzahl, Prädikaterfüllung und Zugriffsaufwand; Identität derselben 24 Dokumente wird nicht als Query-Semantik vorausgesetzt.
+Q2 besitzt ebenfalls eine häufige und eine seltene Parametervariante. Sie untersucht Multikey-Zugriff, das zusätzliche Equality-Feld und Partial-Indizes. Weil keine Sortierung festgelegt ist, wird nicht die Identität derselben 24 Dokumente verlangt; geprüft werden Ergebnisumfang, Prädikaterfüllung und vollständiger Cursorverbrauch bis zum Limit.
 
-### Q3 – Aktives Produktdetail über fachliche ID
+### Q3 – Produktdetail über fachliche ID
 
 ```javascript
 db.products.findOne({
@@ -51,129 +63,155 @@ db.products.findOne({
 })
 ```
 
-- **Aussagefunktion:** hochselektiver Detailabruf eines konkreten Produkts.
-- **Variationen:** Datenmenge; keine künstliche Selektivitätsvariation der eindeutigen ID.
-- **Prüfziel:** Nutzen eines vollständigen Unique Index auf `productId` gegenüber der Baseline und Einordnung der Alternative, `productId` direkt als `_id` zu modellieren.
-- **Grenze:** Die `_id`-Alternative wird konzeptionell diskutiert, aber nicht als zweite Dokumentstruktur benchmarked. Ein Partial Index auf `productId` wird nicht mehr als Standardkandidat empfohlen, weil er globale Eindeutigkeit und Abrufe inaktiver Produkte nicht allgemein absichert.
+I9 garantiert die Eindeutigkeit der fachlichen `productId` und ist Teil jeder zulässigen Konfiguration; `isActive` bleibt ein nachgelagertes Prädikat. Q3 prüft damit die feste Basiskonfiguration, entscheidet aber nicht zwischen den optionalen Sets. Die Alternative, `productId` direkt als `_id` zu modellieren, wird nur als Schemaentscheidung diskutiert.
 
-## Kandidatenpool
+Die drei Skalierungen bleiben 10.000, 100.000 und 500.000 Dokumente. Häufige und seltene Werte sind kontrollierte Versuchsfaktoren; beobachtete Trefferanteile werden je Lauf protokolliert und nicht als reale Shopverteilung ausgegeben.
 
-Alle benannten Kandidaten sollen innerhalb einer Skalierungsstufe gleichzeitig installiert werden. Kandidaten mit identischem Key Pattern werden über eindeutige Indexnamen gehintet. Die Kandidaten sind Untersuchungshypothesen, keine vorweggenommenen Empfehlungen.
+## Kandidatenraum
 
-| ID | Query | Indexdefinition | Begründete Erwartung |
-| --- | --- | --- | --- |
-| I1 | Q1 | `{category: 1}` | unterstützt den führenden Filter, aber weder Aktivstatus noch Preissortierung vollständig |
-| I2 | Q1 | `{category: 1, price: -1}` | unterstützt Kategorie und Preisreihenfolge; `isActive` bleibt Fetch-Prädikat |
-| I3 | Q1 | `{price: -1, category: 1, isActive: 1}` | priorisiert die Sortierreihenfolge und prüft eine plausible Sort-first-Alternative |
-| I4 | Q1 | `{category: 1, isActive: 1, price: -1}` | folgt für die konkrete Query der Equality-Sort-Logik und kann Sortierarbeit vermeiden |
-| I5 | Q1 | `{category: 1, price: -1}`, `partialFilterExpression: {isActive: true}` | unterstützt nur aktive Listen, reduziert dafür potenziell Größe und zu prüfende Einträge |
-| I6 | Q2 | `{tags: 1}` | direkter Multikey-Zugriff; Aktivstatus wird nachgelagert geprüft |
-| I7 | Q2 | `{tags: 1, isActive: 1}` | bindet beide Equality-Prädikate in einen Compound-Multikey-Index ein |
-| I8 | Q2 | `{tags: 1}`, `partialFilterExpression: {isActive: true}` | begrenzt den Multikey-Index auf öffentlich aktive Produkte |
-| I9 | Q3 | `{productId: 1}`, `unique: true` | unterstützt den punktuellen Zugriff und erzwingt die fachlich erwartete globale Eindeutigkeit |
+| ID | Rolle | Indexdefinition |
+| --- | --- | --- |
+| I1 | optional, Q1 | `{category: 1}` |
+| I2 | optional, Q1 | `{category: 1, price: -1}` |
+| I3 | optional, Q1 | `{price: -1, category: 1, isActive: 1}` |
+| I4 | optional, Q1 | `{category: 1, isActive: 1, price: -1}` |
+| I5 | optional, Q1 | `{category: 1, price: -1}`, partial `{isActive: true}` |
+| I6 | optional, Q2 | `{tags: 1}` |
+| I7 | optional, Q2 | `{tags: 1, isActive: 1}` |
+| I8 | optional, Q2 | `{tags: 1}`, partial `{isActive: true}` |
+| I9 | verpflichtend, Q3 | `{productId: 1}`, `unique: true` |
 
-Die Baseline besitzt nur den automatisch erzeugten `_id`-Index. Im vollständigen Kandidatenpool werden für Q1 die Kandidaten I1 bis I5, für Q2 I6 bis I8 und für Q3 I9 kontrolliert. Eine identische Kandidatenzahl je Query wäre methodisch künstlich und ist nicht vorgesehen.
+Der optionale Suchraum ist `I_optional = {I1, ..., I8}`. Jedes untersuchte Set hat die Form `B ∪ S` mit Basiskonfiguration `B = {_id, I9}` und `S ⊆ I_optional`. Einschließlich des leeren optionalen Sets entstehen `2^8 = 256` zulässige Konfigurationen.
 
-## Fachliche Tragfähigkeit der Kandidaten
+I3 bleibt als bewusst schwächer erwartete Sort-first-Alternative erhalten. Die Kandidaten sind vorab begründete Untersuchungshypothesen, keine Empfehlungen. I1 kann trotz Präfixabdeckung kleiner sein; I5 und I8 können Speicher und Wartung reduzieren; I7 ist zulässig, weil nur `tags` ein Arrayfeld ist. Partial-Kandidaten dürfen nur für Queries mit `isActive: true` profiliert werden.
 
-- **Compound-Feldreihenfolge:** MongoDB dokumentiert, dass die Reihenfolge der Schlüssel für Filter- und Sortierunterstützung entscheidend ist. Die ESR-Guideline ist eine Heuristik, kein universelles Gesetz. Q1 vergleicht deshalb Filter-, Sort-first-, ESR-orientierte und partielle Kandidaten unter identischen Queryparametern.
-- **Compound-Präfixe und Redundanz:** Ein späterer Compound-Index kann einen separaten führenden Präfixindex funktional abdecken. Der kleinere Einzelindex I1 wird trotzdem zunächst gemessen, weil funktionale Abdeckung nicht automatisch gleiche Größe, Cachewirkung oder Laufzeit bedeutet. Er wird nur behalten, wenn sein zusätzlicher Nutzen die Speicher- und Schreibkosten rechtfertigt.
-- **Multikey:** Ein Index auf `tags` wird automatisch zum Multikey-Index. In einem Compound-Multikey-Index darf pro Dokument höchstens ein indexiertes Feld ein Array sein; das Referenzschema erfüllt dies für I7. Q2 enthält keine Sortierung auf dem Arrayfeld und vermeidet damit eine zusätzliche, für die Forschungsfrage unnötige Sortierkomplexität.
-- **Partial Index:** Ein Partial Index darf nur verwendet werden, wenn die Querybedingung seine Filterbedingung einschließt. Q1 und Q2 enthalten deshalb explizit `isActive: true`. Full- und Partial-Kandidaten mit gleichem Key Pattern werden über ihre Namen unterschieden; ihre gemeinsame technische Anlage wird vor dem finalen Lauf durch einen Smoke-Test abgesichert.
-- **Unique `productId`:** MongoDB erzeugt bereits einen Unique Index auf `_id`. Da die Referenzstruktur zusätzlich `productId` verwendet, ist ein vollständiger Unique Index die fachlich konsistente Ausgangshypothese. Die Arbeit weist darauf hin, dass ein reales Neuprojekt die fachliche ID alternativ direkt als `_id` modellieren könnte und dadurch einen zusätzlichen Index vermeidet.
-- **Unnötige Indizes:** MongoDB warnt, dass ein Index pro Query zu redundanten oder ungenutzten Indizes führen kann. Die Reduktionsphase ist daher kein nachträgliches Aufräumen, sondern Teil der Forschungslogik.
+## Technische Screening-Grenzen
 
-## Selektivität und Datenmengen
+MongoDB 8.0 führte Query Settings ein. `allowedIndexes` begrenzt die vom Planner betrachteten Indizes, garantiert aber keinen bestimmten Index und lässt einen Collection Scan weiterhin zu. Hidden Indexes sind plannerunsichtbar, werden jedoch bei Writes weiter gepflegt und verbrauchen Speicher und Arbeitsspeicher. Beide Mechanismen können Diagnose oder Read-Screening unterstützen, simulieren aber keine physisch kleinere Konfiguration.
 
-Die drei Skalierungsstufen bleiben 10.000, 100.000 und 500.000 Dokumente. Sie sind experimentelle Größen und keine Behauptung über einen durchschnittlichen Shop.
+Deshalb wird die Kandidatenprofilierung mit `B` plus genau einem optionalen Kandidaten durchgeführt. `hint()` isoliert nur den logisch zulässigen Zugriffspfad. Finalisten werden dagegen mit ausschließlich ihren tatsächlichen Indizes materialisiert und ohne `hint()` ausgeführt.
 
-Für die neue Datengenerierung werden folgende Zielbereiche angestrebt:
+Relevante MongoDB-Primärdokumentation:
 
-- häufige Kategorie: ungefähr 30–40 % der Dokumente;
-- seltene Kategorie: ungefähr 3–5 %;
-- häufiges Tag: ungefähr 40–60 % der Dokumente;
-- selektiveres Tag: ungefähr 5–10 %;
-- aktive Produkte: ungefähr 80 %;
-- global eindeutige `productId`-Werte.
+- Query Settings und `allowedIndexes`: https://www.mongodb.com/docs/v8.0/reference/command/setquerysettings/
+- Hidden Indexes: https://www.mongodb.com/docs/manual/core/index-hidden/
+- Explain Results: https://www.mongodb.com/docs/manual/reference/explain-results/
+- Partial Indexes: https://www.mongodb.com/docs/v8.0/core/index-partial/
+- Multikey Indexes: https://www.mongodb.com/docs/manual/core/indexes/index-types/index-multikey/
+- Write Operation Performance: https://www.mongodb.com/docs/manual/core/write-performance/
 
-Nicht die Generatorgewichte, sondern die tatsächlich beobachteten Trefferzahlen und Prävalenzen werden je Skalierungsstufe im Manifest gespeichert. Ein fester Seed sichert Reproduzierbarkeit. Der Kontrast ist bewusst kontrolliert und wird nicht als empirische Verteilung realer Shops ausgegeben.
+## Messplan der Kandidatenprofilierung
 
-## Mess- und Auswahlverfahren
+Für jede Skalierung wird zuerst `B` gemessen. Anschließend wird pro optionalem Kandidaten ein äquivalenter Datenzustand mit `B ∪ {i}` hergestellt.
 
-### Baseline
+- drei Warmups und zehn Messwiederholungen je zulässiger Query-Kandidaten-Kombination;
+- deterministisch rotierte Reihenfolge;
+- reale Wall-Clock-Zeit einer vollständig bis `limit(24)` konsumierten Query als primäre Zeitmessung;
+- `explain("executionStats")` getrennt davon für `totalDocsExamined`, `totalKeysExamined`, `nReturned`, Indexname sowie Fetch-/Sort-Stufen;
+- Ergebnisvalidierung und Laufmanifest pro Messung;
+- Indexgröße des optionalen Kandidaten als inkrementeller Speicherbedarf;
+- bei 500.000 Ausgangsdokumenten zusätzlich fünf Wiederholungen von 1.000 Inserts und 1.000 deterministisch ausgewählten `isActive`-Änderungen für `B` und `B ∪ {i}`.
 
-Alle Queryvarianten werden zunächst ohne benutzerdefinierte Indizes ausgeführt. Für eine explizite Kontrollmessung kann der Collection Scan über `hint({$natural: 1})` erzwungen werden.
+MongoDB weist ausdrücklich darauf hin, dass `explain.executionStats.executionTimeMillis` nicht zwingend die tatsächliche eingeschwungene Queryzeit repräsentiert. Explain-Struktur und separat gemessene Laufzeit bleiben deshalb unterschiedliche Messgrößen.
 
-### Kontrollierte Kandidatenmessung
+## Read-Kostenmodell
 
-- Alle Kandidaten sind gleichzeitig installiert.
-- Nur für die jeweilige Query fachlich geeignete Kandidaten werden über den Indexnamen mit `hint()` erzwungen.
-- Pro Skalierung und Queryvariante sind drei Warmups und zehn gemessene Wiederholungen vorgesehen.
-- Die Kandidatenreihenfolge wird je Wiederholung deterministisch rotiert.
-- `explain("executionStats")` liefert Plan und Strukturmetriken.
-- Die reale Query wird zusätzlich vollständig bis zum festgelegten Limit konsumiert und separat zeitlich gemessen.
-- Partial Indizes werden nur bei erfüllter Filterbedingung gehintet.
-- Ergebnisanzahl, Filterkorrektheit und – wo die Query eine deterministische Ordnung definiert – Ergebnisidentität werden geprüft.
+Die drei Query Shapes werden je Skalierung gleich gewichtet. Innerhalb von Q1 und Q2 werden häufige und seltene Variante gleich geteilt:
 
-### Natürliche Planner-Auswahl
+| Queryvariante | Gewicht |
+| --- | ---: |
+| Q1 häufig | 1/6 |
+| Q1 selten | 1/6 |
+| Q2 häufig | 1/6 |
+| Q2 selten | 1/6 |
+| Q3 | 1/3 |
 
-Mit installiertem Kandidatenpool wird jede Query ohne Hint ausgeführt. Explain dokumentiert den gewählten Index und mögliche Sortier-/Fetch-Stufen. Da Explain bestehende Plan-Cache-Einträge ignoriert und `executionTimeMillis` nicht zwingend die steady-state-Laufzeit repräsentiert, werden Plannerentscheidung, Strukturmetriken und separat gemessene Queryzeit nicht gleichgesetzt.
+Sei `t_d(q, B)` die mediane reale Queryzeit der Basiskonfiguration bei Skalierung `d` und `t_d(q, i)` die isolierte Messung mit Kandidat `i`. Die normalisierten Kandidatenkosten lauten:
 
-### Reduktion und finale Validierung
+`r_d(q, i) = t_d(q, i) / t_d(q, B)`
 
-Ein Kandidat wird entfernt, wenn er für den Referenzworkload strukturell dominiert, nicht gewählt, durch einen anderen Index hinreichend abgedeckt oder nur durch einen unverhältnismäßigen Speicherzuwachs gerechtfertigt wäre. Gibt es keinen eindeutigen Sieger, bleibt die Empfehlung bedingt.
+Für ein optionales Set `S` gilt als Screening-Schätzung:
 
-Nach der Reduktion werden alle Query Shapes mit der finalen Konfiguration ohne Hint erneut gemessen. Erst dieser Lauf stützt die gemeinsame Indexaufstellung. Ausgewiesen werden die exakten `createIndex`-Definitionen, verwendete Indizes, Gesamtindexgröße und Bedingungen der Empfehlung.
+`ĉ_d(q, S) = min(1, min_{i ∈ S und zulässig für q} r_d(q, i))`
 
-## Begrenzte Schreibkostenprüfung
+`Ĉ_read,d(S) = Σ_q w_q · ĉ_d(q, S)`
 
-MongoDB aktualisiert bei Inserts die relevanten Einträge aller Indizes und bei Updates die von den geänderten Schlüsseln beziehungsweise Partial-Bedingungen betroffenen Indizes. Deshalb wäre eine uneingeschränkte Aussage über „Anwendungseffizienz“ bei reiner Lesemessung unangemessen.
+Damit besitzt das leere optionale Set pro Skalierung Read-Kosten von 1. Die Normalisierung verhindert, dass langsame Querytypen oder die größte Skalierung allein wegen ihrer absoluten Dauer die Auswahl dominieren. Sie ist eine experimentelle Bewertungsentscheidung; absolute Medianzeiten werden zusätzlich berichtet.
 
-Die Arbeit ergänzt bei 500.000 Ausgangsdokumenten eine begrenzte Gegenprüfung:
+Die Minimum-Schätzung nimmt jeweils den besten einzeln gemessenen Zugriff an. Sie bildet weder Index Intersection noch Cachekonkurrenz, gemeinsame Plannerentscheidungen oder sonstige Indexinteraktionen ab. Genau diese Abweichung wird durch die Finalvalidierung untersucht.
 
-1. Einfügen eines deterministisch erzeugten Batches von 1.000 neuen Produkten;
-2. Umschalten von `isActive` für 1.000 vorab festgelegte Produkte, sodass Ein- und Austritte aus möglichen Partial Indizes auftreten. Die Zieldokumente werden über ihre in beiden Konfigurationen indexierten `_id`-Werte adressiert, damit die Messung nicht durch einen zusätzlichen Lookup-Vorteil der finalen `productId`-Konfiguration verzerrt wird.
+## Speicher- und Write-Proxys
 
-Verglichen werden ausschließlich Baseline und finale gemeinsame Konfiguration. Die Ausgangszustände, Batches, Write Concern und Bulk-Optionen müssen identisch sein; Auswahl und Rücksetzung der Testdokumente liegen außerhalb des gemessenen Intervalls. Fünf Wiederholungen und Median beziehungsweise Durchsatz sind vorgesehen. Delete-Performance, konkurrierende Writer und ein repräsentatives Lese-/Schreibverhältnis bleiben ausgeschlossen.
+Der Screening-Speicherbedarf ist die Summe der einzeln gemessenen optionalen Indexgrößen:
 
-## Bewertungslogik
+`M̂_d(S) = Σ_{i ∈ S} size_d(i)`
 
-Die Bewertung verwendet keine ungewichtete Gesamtnote und bestimmt den „besten“ Index nicht aus einem einzelnen Laufzeitwert.
+Die konstante Größe von `_id` und I9 wird separat als Basis ausgewiesen und beeinflusst die Dominanz optionaler Sets nicht.
 
-1. **Korrektheit und Eignung:** vollständiges, logisch korrektes Ergebnis; Partial-Bedingung erfüllt.
-2. **Struktureller Aufwand:** `totalDocsExamined`, `totalKeysExamined`, `nReturned`, `COLLSCAN`, `IXSCAN`, `FETCH`, `SORT` und Verhältnis der geprüften Einträge zum Ergebnis.
-3. **Laufzeit:** Median separat ausgeführter Queries; Explain-Zeit nur ergänzend.
-4. **Ressourcen:** einzelne und gesamte Indexgröße; für das finale Set zusätzlich Insert-/Update-Aufwand.
-5. **Workload-Abdeckung:** natürliche Planner-Auswahl, Compound-Präfixe, bedingte Nutzbarkeit und verbleibende Redundanz.
+Für Insert und Aktivstatus-Update wird bei 500.000 Dokumenten je Kandidat der nichtnegative relative Mehraufwand gegenüber `B` bestimmt. Negative Einzelabweichungen werden als Messrauschen auf null begrenzt. Der Write-Screening-Proxy ist die Summe der pro Kandidat gleich gewichteten Insert- und Update-Overheads:
+
+`ŵ(i) = 0,5 · max(0, T_insert(B∪{i}) / T_insert(B) - 1) + 0,5 · max(0, T_update(B∪{i}) / T_update(B) - 1)`
+
+`Ŵ(S) = Σ_{i ∈ S} ŵ(i)`
+
+Diese Additivität ist ausdrücklich nur ein Ranking-Proxy. Belastbare Write-Aussagen stammen ausschließlich aus den materialisierten Finalisten.
+
+## Pareto-Auswertung und Skalen
+
+Für jede Skalierung wird ein eigener Zielvektor ausgewertet:
+
+`F_d(S) = (Ĉ_read,d(S), Ŵ(S), M̂_d(S))`
+
+Ein Set wird entfernt, wenn ein anderes Set in allen drei Dimensionen mindestens gleich gut und in mindestens einer Dimension besser ist. Es gibt keine frei erfundene skalare Gesamtstrafe. Das Werkzeug unterstützt zusätzlich optionale Grenzen für Speicher, Indexanzahl und Write-Proxy.
+
+Die Skalen werden nicht zu einer einzigen Kostenfunktion vermischt. Berichtet werden Pareto-Mitgliedschaft und Rangwechsel je Skalierung. Dadurch bleibt sichtbar, ob ein Set nur bei kleinen Datenmengen oder robust über mehrere Skalierungen attraktiv ist.
+
+## Deterministische Finalistenauswahl
+
+Die Basiskonfiguration `B` wird immer separat validiert und zählt nicht als Finalist. Für Speicher- und Write-Kompromiss werden zunächst drei Read-Toleranzbänder von 5 %, 10 % und 20 % rechnerisch ausgewertet. Das 10-%-Band ist die vorab festgelegte primäre Auswahlregel; 5 % und 20 % bilden eine Sensitivitätsanalyse. Aus der Vereinigung der drei Pareto-Fronten werden anhand des primären Bandes höchstens drei unterschiedliche Sets gewählt:
+
+1. **Read-Anker:** niedrigstes `Ĉ_read` bei 500.000 Dokumenten; Tie-Breaker: weniger optionale Indizes, weniger Speicher, niedrigerer Write-Proxy, anschließend lexikografische Index-IDs.
+2. **Speicherkompromiss:** unter den Sets mit höchstens 10 % höheren Read-Kosten als der Read-Anker bei 500.000 Dokumenten das Set mit dem geringsten optionalen Speicher; dieselben Tie-Breaker.
+3. **Write-Kompromiss:** innerhalb desselben primären 10-%-Read-Bandes das Set mit dem niedrigsten Write-Proxy; dieselben Tie-Breaker.
+
+Für die Sensitivitätsanalyse werden die beiden Kompromissfunktionen zusätzlich mit 5 % und 20 % ausgeführt. Es wird ausgewiesen, ob dieselben Sets gewählt werden, welche Kandidaten wechseln und wie groß die Änderungen bei Indexanzahl, Speicher- und Write-Proxy sind. Diese Alternativen werden nicht allein wegen eines günstigeren späteren Ergebnisses als Finalisten nachnominiert.
+
+Duplikate im primären 10-%-Band werden nicht ersetzt; dadurch können weniger als drei Finalisten entstehen. Das 10-%-Band ist eine explizite Fallstudienpräferenz und keine natürliche MongoDB-Grenze. Die flankierenden Bänder prüfen, wie stark die Auswahl von dieser Präferenz abhängt. Alle Regeln werden vor Kenntnis der Finalmessungen festgeschrieben.
+
+## Finalvalidierung
+
+Für `B` und jeden Finalisten wird ein sauberer äquivalenter Ausgangszustand hergestellt. Installiert sind nur `_id`, I9 und die optionalen Indizes des jeweiligen Sets.
+
+- alle Queryvarianten ohne `hint()`;
+- drei Warmups und zehn reale Zeitmessungen je Variante und Skalierung;
+- Explain-Struktur getrennt von realer Laufzeit;
+- tatsächliche gesamte und inkrementelle Indexgröße;
+- fünf Wiederholungen identischer Batches mit 1.000 Inserts und 1.000 `isActive`-Updates bei 500.000 Ausgangsdokumenten;
+- Vergleich von `Ĉ_read,d(S)` mit den aus den tatsächlichen Setläufen berechneten Read-Kosten;
+- Abweichung, Plannerwahl und mögliche Indexinteraktionen als eigenes empirisches Ergebnis.
+
+Die physische Validierung bleibt auf den Read-Anker und die höchstens zwei unterschiedlichen Kandidaten des primären 10-%-Bandes begrenzt. Kandidaten, die ausschließlich in der 5-%- oder 20-%-Sensitivitätsanalyse auftreten, werden als bedingte Screening-Ergebnisse berichtet, aber nicht zusätzlich materialisiert.
 
 ## Praktische Machbarkeit
 
-Der bestehende Benchmark ist weiterhin eine geeignete technische Basis: Query- und Indexregistries, reproduzierbare Datenerzeugung, Plan-Cache-Behandlung, Explain-Parsing, Artefaktarchivierung und Tests sind vorhanden. Die Neuausrichtung erfordert jedoch relevante Anpassungen:
+Der vorhandene Benchmark besitzt deterministische Datengenerierung, Query- und Indexregistries, Explain-Parsing, Profile, Ergebnisvalidierung und Artefaktarchive. Der aktuelle Runner bildet jedoch eine Scenario-Strategy-Matrix ab und materialisiert einzelne Strategien; Workloadgewichte, Pflichtindizes, Enumeration, Pareto-Analyse, Constraints und Finalistenläufe fehlen noch.
 
-- neue Queryparameter, Limits und Selektivitätsverteilungen;
-- Kandidatenpool statt szenarioweisem Indexwechsel;
-- Hint-Unterstützung und getrennte tatsächliche Query-Zeitmessung;
-- generalisierte Analyse statt fest codierter H1–H4-Auswertung;
-- neue Diagramme und Konfigurationsmatrix;
-- finales Kombiset-Profil und begrenzter Schreibtest;
-- aktualisierte Unit-, Integrations- und End-to-End-Tests.
+Das Softwareartefakt ist daher eine substanzielle, aber begrenzte Erweiterung. Bei acht optionalen Kandidaten ist die Enumeration rechnerisch trivial. Der Hauptaufwand liegt in reproduzierbarer Profilierung, Zustandsisolation und korrekter Trennung von Screening und Finalmessung.
 
-Der Lauf vom 24.07.2026 bleibt als Pilot erhalten, ist aber für die neue Forschungsfrage keine finale Evidenz. Nach Umsetzung und Tests ist ein neuer, sauber dokumentierter Lauf erforderlich.
+`$queryStats` kann in einer späteren Anwendung Query Shapes und beobachtete Häufigkeiten liefern, ist für die Fallstudie aber ungeeignet: Die Funktion ist laut MongoDB nicht stabil garantiert und an bestimmte Atlas-Voraussetzungen gebunden. Die Fallstudie verwendet daher versionierte Workloadkonfigurationen.
 
-## Konsequenzen für Gliederung und Aussageanspruch
+## Konsequenzen für die Arbeit
 
-1. Die Theorie erklärt Entwurfsprinzipien und Messgrößen, nicht nacheinander vier Indexarten als Selbstzweck.
-2. Das Methodikkapitel enthält eine sichtbare Index-Design-Phase, die Kandidaten vor den Ergebnissen begründet.
-3. Die Ergebnisse werden nach Query Shape berichtet und trennen Hint-Vergleich, natürliche Planner-Auswahl und Interpretation.
-4. Die gemeinsame Konfiguration entsteht erst nach Redundanzprüfung und wird anschließend ohne Hint workloadweit validiert.
-5. Der kleine Schreibtest quantifiziert einen Trade-off, rechtfertigt aber keine Aussage über die Effizienz der gesamten Anwendung.
-6. Das Fazit liefert eine konkrete Referenzkonfiguration und einen Übertragungsleitfaden für ähnliche Daten- und Zugriffsmuster, keine universelle Shop-Vorlage.
+- Theorie erläutert nur MongoDB-Indexmerkmale, die im Kandidatenraum vorkommen, und führt anschließend das workloadbasierte Index Selection Problem, Constraints und Pareto-Dominanz ein.
+- Methodik trennt Kandidatenprofilierung, Kostenmodell, vollständige Enumeration, Finalistenauswahl und physische Validierung.
+- Ergebnisse berichten zuerst Screening und Pareto-Fronten, danach Schätzungsabweichung und reale Trade-offs der Finalisten.
+- Die Empfehlung ist bedingt; „global optimal“ und „universell bestes Set“ bleiben ausgeschlossen.
+- Der Lauf vom 24.07.2026 ist nur Pilot und keine Evidenz für die neue Forschungsfrage.
 
-## Noch offene Punkte für G3/G4 und Umsetzung
+## Evidenzlücken für G4
 
-- Exakte bibliografische und methodische Fundstelle für reproduzierbare Datenbank-Mikrobenchmarks auswählen.
-- Gleichzeitige Anlage der Full-/Partial-Kandidaten mit identischem Key Pattern in MongoDB 8.2.11 per Smoke-Test bestätigen und stets über Namen hintbar machen.
-- Queryzeitmessung einschließlich vollständiger Cursor-Konsumierung implementieren und gegen Explain-Metriken trennen.
-- Äquivalenzprüfung für limitierte, aber unsortierte Q2-Ergebnisse als Prädikat- und Kardinalitätsprüfung spezifizieren.
-- Identische Ausgangszustände der fünf Schreibwiederholungen technisch absichern.
-- Nach dem neuen Lauf entscheiden, welche Kandidaten die finale Konfiguration tatsächlich bilden; diese Auswahl darf in G2 nicht vorweggenommen werden.
+- exakte Fundstellen in den wissenschaftlichen Index-Advisor-Publikationen;
+- belastbare Benchmarkliteratur zu Laufzeitmessung, Warmups und Systemeffekten;
+- präzise MongoDB-8.x-Fundstellen für Compound-Präfixe, ESR, Partial- und Multikey-Bedingungen;
+- eigene Smoke-Tests zur Koexistenz gleichartiger Full-/Partial-Key-Patterns und zur vollständigen Ergebnisvalidierung;
+- empirische Prüfung, ob zehn Read- und fünf Write-Wiederholungen unter der konkreten Umgebung stabile Medianwerte liefern.
