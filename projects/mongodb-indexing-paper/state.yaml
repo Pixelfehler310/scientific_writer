@@ -1,0 +1,62 @@
+schema_version: 1
+current_phase: initialization
+phases:
+  initialization: approved
+  brief: not_started
+  scoping: not_started
+  outline: not_started
+  chapter_planning: not_started
+  deep_research: not_started
+  evidence_synthesis: not_started
+  practical_work: not_started
+  drafting: not_started
+  source_audit: not_started
+  refinement: not_started
+  latex_finalization: not_started
+gates:
+  G0:
+    status: approved
+    approved_at: '2026-08-04T19:56:39.357050+00:00'
+    approved_by: Simon Sucker
+    note: G0 am 04.08.2026 ausdrücklich freigegeben. Fehlende separate Vorgabenquellen
+      und noch nicht institutionell festgelegte Nutzungs- beziehungsweise KI-Regeln
+      werden bewusst akzeptiert; das Projektziel von 4.000 Wörtern gilt.
+  G1:
+    status: pending
+    approved_at: null
+    approved_by: null
+    note: null
+  G2:
+    status: pending
+    approved_at: null
+    approved_by: null
+    note: null
+  G3:
+    status: pending
+    approved_at: null
+    approved_by: null
+    note: null
+  G4:
+    status: pending
+    approved_at: null
+    approved_by: null
+    note: null
+  G5:
+    status: pending
+    approved_at: null
+    approved_by: null
+    note: null
+  G6:
+    status: pending
+    approved_at: null
+    approved_by: null
+    note: null
+  G7:
+    status: pending
+    approved_at: null
+    approved_by: null
+    note: null
+chapters: {}
+blockers: []
+invalidations: []
+last_validation: '2026-08-04T19:56:39.357050+00:00'

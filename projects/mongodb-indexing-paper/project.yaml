@@ -1,0 +1,66 @@
+schema_version: 2
+
+paper:
+  title: "Workloadbasierte Auswahl und empirische Validierung geeigneter MongoDB-Indexsets für einen E-Commerce-Produktkatalog"
+  research_question: "Welche MongoDB-Indexsets eignen sich für einen definierten E-Commerce-Produktkatalog-Workload unter Berücksichtigung von Query-Latenz, strukturellen Explain-Metriken, Indexspeicher und Write-Aufwand, und welche bedingte Empfehlung lässt sich daraus ableiten?"
+  language: de
+  document_type: seminararbeit
+  discipline: computer_science
+  workflow_type: technical_empirical
+  target_words: 4000
+
+word_budget:
+  introduction: 400
+  theory: 1100
+  main_part: 2100
+  conclusion: 400
+  tolerance_percent: 10
+
+paths:
+  document_root: seminararbeit
+  bibliography: seminararbeit/literatur
+  latex_template: .scientific-writing/template-reference/Ausarbeitungsvorlage
+  writing_style: null
+
+template:
+  provider: fh_swf_written_work
+  source_root: null
+  reference_root: .scientific-writing/template-reference
+  working_root: seminararbeit
+  lockfile: .scientific-writing/template-lock.yaml
+  entrypoint: main.tex
+  copy_policy: snapshot
+  update_policy: explicit
+  bootstrap_policy: conservative
+
+latex:
+  compiler: auto
+  engine: pdflatex
+  bibliography_backend: bibtex
+  bibliography_files:
+    - seminararbeit/literatur/literatur.bib
+  output_root: .scientific-writing/build/latex
+  visual_pdf_review: required
+
+citations:
+  citation_style: IEEE
+  final_direct_quotes: forbidden
+  exact_pages_required_for_paginated_sources: true
+  exact_sections_required_for_web_sources: true
+  secondary_citations: exceptional_only
+
+research_notes:
+  excerpt_warning_words: 120
+  longer_excerpt_requires_human_approval: true
+  automatic_excerpt_splitting: forbidden
+
+workflow:
+  require_persisted_approvals: true
+  preserve_paragraph_ids: true
+
+institution:
+  requirements_source: "Explizite Projektentscheidung des Autors im Chat vom 2026-08-04; keine separate Vorgabenquelle für G0 hinterlegt."
+  word_count_rule: "Projektziel sind 4.000 Wörter; keine abweichende institutionelle Zählregel ist bekannt."
+  ai_use_policy: "Noch nicht institutionell festgelegt; der Autor akzeptiert diese offene Angabe für G0 bewusst."
+  deviations:
+    - "Noch keine institutionellen Abweichungen bekannt; vor G0 ausdrücklich zu bestätigen."
