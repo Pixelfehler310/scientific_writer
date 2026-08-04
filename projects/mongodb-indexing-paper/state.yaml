@@ -1,8 +1,8 @@
 schema_version: 1
-current_phase: initialization
+current_phase: brief
 phases:
   initialization: approved
-  brief: not_started
+  brief: approved
   scoping: not_started
   outline: not_started
   chapter_planning: not_started
@@ -22,10 +22,11 @@ gates:
       und noch nicht institutionell festgelegte Nutzungs- beziehungsweise KI-Regeln
       werden bewusst akzeptiert; das Projektziel von 4.000 Wörtern gilt.
   G1:
-    status: pending
-    approved_at: null
-    approved_by: null
-    note: null
+    status: approved
+    approved_at: '2026-08-04T21:13:32.354685+00:00'
+    approved_by: Simon Sucker
+    note: G1 am 04.08.2026 ausdrücklich freigegeben. Forschungsfrage, Scope und Methode
+      der vom Autor überarbeiteten Brief-Fassung sind bestätigt.
   G2:
     status: pending
     approved_at: null
@@ -59,4 +60,4 @@ gates:
 chapters: {}
 blockers: []
 invalidations: []
-last_validation: '2026-08-04T19:56:39.357050+00:00'
+last_validation: '2026-08-04T21:13:32.354685+00:00'
