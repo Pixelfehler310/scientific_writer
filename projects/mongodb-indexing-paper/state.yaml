@@ -1,13 +1,13 @@
 schema_version: 1
-current_phase: chapter_planning
+current_phase: evidence_synthesis
 phases:
   initialization: approved
   brief: approved
   scoping: approved
   outline: approved
   chapter_planning: approved
-  deep_research: not_started
-  evidence_synthesis: not_started
+  deep_research: approved
+  evidence_synthesis: approved
   practical_work: not_started
   drafting: not_started
   source_audit: not_started
@@ -42,10 +42,11 @@ gates:
     note: 'G3 am 05.08.2026 ausdrücklich freigegeben: Ich gebe G3 frei. Mach weiter
       mit der nächsten Phase.'
   G4:
-    status: pending
-    approved_at: null
-    approved_by: null
-    note: null
+    status: approved
+    approved_at: '2026-08-05T21:15:57.773387+00:00'
+    approved_by: Simon Sucker
+    note: 'G4 am 05.08.2026 ausdrücklich freigegeben: Perfekt! Damit gebe ich G4 frei,
+      fahre fort.'
   G5:
     status: pending
     approved_at: null
@@ -62,11 +63,11 @@ gates:
     approved_by: null
     note: null
 chapters:
-  intro: awaiting_human_approval
-  foundations: awaiting_human_approval
-  method: awaiting_human_approval
-  evaluation: awaiting_human_approval
-  conclusion: awaiting_human_approval
+  intro: approved
+  foundations: approved
+  method: approved
+  evaluation: approved
+  conclusion: approved
 blockers: []
 invalidations: []
-last_validation: '2026-08-05T18:20:44.599575+00:00'
+last_validation: '2026-08-05T21:15:57.773387+00:00'

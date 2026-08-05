@@ -27,12 +27,65 @@ Voraussetzungen sind der freigegebene Brief und die G2-Gliederung. Das Kapitel �
 - **Begründung:** Die Arbeit benötigt einen Mehrzielkonflikt als Ausgangspunkt, nicht nur die Behauptung, Indizes beschleunigten Abfragen.
 - **Evidenzbedarf:** allgemeine Indexwirkung und Write-/Speicherkosten.
 - **Evidenztyp:** `external`
-- **Evidenzstatus:** `planned`
+- **Evidenzstatus:** `ready`
 - **Beziehung davor:** Themenbeginn.
 - **Beziehung danach:** Folge — aus dem Zielkonflikt entsteht die konkrete Forschungslücke des Fallbeispiels.
 - **Zielwörter:** 100.
 - **Medium:** keines.
 - **Offene Recherche:** geeigneten knappen Primärbeleg bestimmen.
+
+<details>
+<summary>Evidenz und menschliche Prüfung</summary>
+
+#### E-IN-01-P01-01 — Nutzen und Kosten zusätzlicher Indizes
+
+- **Rolle:** `stützt`
+- **Vollbeleg / Artefakt:** MongoDB Inc. (o. J.): *Indexes*. MongoDB Database Manual 8.0.
+- **Link / Projektpfad:** https://www.mongodb.com/docs/v8.0/indexes/
+- **Ausgabe / Version:** MongoDB Database Manual 8.0; abgerufen am 05.08.2026.
+- **Fundstelle:** Einleitungsabschnitt „Indexes“, insbesondere Aussagen zu Collection Scan, Scanbegrenzung und Write-Auswirkung; Abschnitt „Details“ zur geordneten Indexstruktur.
+- **Originalauszug / quellennaher Auszug:**
+
+  > Quellennahe Inhaltsnotiz: Ohne passenden Index muss MongoDB jedes Dokument prüfen; ein geeigneter Index kann die Zahl geprüfter Dokumente begrenzen. Zusätzliche Indizes belasten Schreiboperationen, weil Inserts auch die Indizes aktualisieren.
+
+- **Eigene Zusammenfassung:** Die Quelle trägt den einleitenden Zielkonflikt: Indizes können Lesezugriffe begrenzen, sind aber keine kostenlose Ergänzung einer Collection.
+- **Grenze und Kontext:** Die Dokumentation belegt weder, dass jeder Index jede Query beschleunigt, noch die konkrete Höhe der Kosten im untersuchten Produktkatalog.
+- **Reviewentscheidung:** `offen`
+- **Menschliche Prüfung:** ausstehend
+
+#### E-IN-01-P01-02 — DBMS-übergreifender Nutzen-Kosten-Zielkonflikt
+
+- **Rolle:** `stützt`
+- **Vollbeleg / Artefakt:** PostgreSQL Global Development Group (o. J.): *Indexes*. PostgreSQL 18 Documentation, Kapitel 11.
+- **Link / Projektpfad:** https://www.postgresql.org/docs/18/indexes.html
+- **Ausgabe / Version:** PostgreSQL 18 Documentation; abgerufen am 05.08.2026.
+- **Fundstelle:** Einleitung zu Kapitel 11 „Indexes“.
+- **Originalauszug / quellennaher Auszug:**
+
+  > Quellennahe Inhaltsnotiz: Indizes können das Auffinden und Abrufen bestimmter Zeilen gegenüber einem Zugriff ohne Index deutlich beschleunigen, verursachen zugleich aber zusätzlichen Aufwand für das Datenbanksystem und sollen daher gezielt eingesetzt werden.
+
+- **Eigene Zusammenfassung:** Eine von MongoDB unabhängige DBMS-Dokumentation bestätigt den allgemeinen Zielkonflikt zwischen beschleunigten Lesezugriffen und zusätzlichem Systemaufwand durch Indizes.
+- **Grenze und Kontext:** Die Quelle beschreibt PostgreSQL und belegt weder MongoDB-spezifische Pflegevorgänge noch die quantitative Höhe des Aufwands im Benchmark.
+- **Reviewentscheidung:** `offen`
+- **Menschliche Prüfung:** ausstehend
+
+#### E-IN-01-P01-03 — Indexabhängiger Pflegeaufwand
+
+- **Rolle:** `stützt`
+- **Vollbeleg / Artefakt:** MongoDB Inc. (o. J.): *Write Operation Performance*. MongoDB Database Manual 8.0.
+- **Link / Projektpfad:** https://www.mongodb.com/docs/v8.0/core/write-performance/
+- **Ausgabe / Version:** MongoDB Database Manual 8.0; abgerufen am 05.08.2026.
+- **Fundstelle:** Abschnitt „Indexes“.
+- **Originalauszug / quellennaher Auszug:**
+
+  > Quellennahe Inhaltsnotiz: Inserts und Deletes ändern die zugehörigen Schlüssel in jedem Index; Updates betreffen abhängig von den geänderten Schlüsseln nur eine Teilmenge der Indizes.
+
+- **Eigene Zusammenfassung:** Die Pflegekosten entstehen auf Ebene des gesamten Indexsets und hängen bei Updates davon ab, welche indexierten Felder betroffen sind.
+- **Grenze und Kontext:** Die Quelle quantifiziert den Aufwand nicht und erlaubt keine Vorhersage der Messergebnisse von W1/W2.
+- **Reviewentscheidung:** `offen`
+- **Menschliche Prüfung:** ausstehend
+
+</details>
 
 ### IN-01-P02 — Fall und Erkenntnislücke
 

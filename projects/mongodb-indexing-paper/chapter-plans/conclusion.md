@@ -21,16 +21,37 @@ Voraussetzung ist die abgeschlossene Evaluation einschließlich Limitationen. Es
 ### CO-05-P01 — Direkte Antwort auf die Forschungsfrage
 
 - **Funktion:** Hauptbefund ohne Wiederholung des gesamten Ergebnisabschnitts formulieren.
-- **Kernaussage:** Das beziehungsweise die empirisch gestützten Sets werden mit Prioritätsbedingung und Versuchsraum benannt.
+- **Kernaussage:** Kein Set ist im gesamten Versuchsraum überlegen: Die Lesepriorität führt je nach dominanten Query-Szenarien zu W2, L oder B, während Ressourcen- und Write-Priorität überwiegend B begünstigt.
 - **Begründung:** Die Arbeit muss eine klare Antwort liefern, auch wenn sie konditional ist.
 - **Evidenzbedarf:** ausschließlich validierte eigene Ergebnisse aus EV-04-P07.
 - **Evidenztyp:** `internal`
-- **Evidenzstatus:** `planned`
+- **Evidenzstatus:** `ready`
 - **Beziehung davor:** Synthese der Evaluation.
 - **Beziehung danach:** Begründende Verdichtung der wichtigsten Trade-offs.
 - **Zielwörter:** 120.
 - **Medium:** keines.
-- **Offene Recherche:** keine; Ergebnis offen.
+- **Offene Recherche:** keine; genaue Schlussformulierung nach menschlicher Ergebnisprüfung.
+
+<details>
+<summary>Evidenz und menschliche Prüfung</summary>
+
+#### E-CO-05-P01-01 — Bedingte Antwort aus dem Referenzlauf
+
+- **Rolle:** `interne Evidenz`
+- **Vollbeleg / Artefakt:** Ergebnisableitung EV-04-P07 und Vergleichsbewertung des Full-Runs `2026-08-05_210546_567224_full_b24e5dfb`.
+- **Link / Projektpfad:** C:/Users/simon/Documents/uni/fh_swf/schriftliche_Ausarbeitungen/scientific_writer/projects/mongodb-indexing-paper/chapter-plans/evaluation.md; D:/projects/uni/mongodb_indexing/artifacts/runs/2026-08-05_210546_567224_full_b24e5dfb/analysis/comparison_assessment.json
+- **Ausgabe / Version:** Full-Profil vom 05.08.2026, Benchmark-Commit `7752eed`.
+- **Fundstelle:** Evidenzblock `E-EV-04-P07-01`; Einträge `DOMINANCE`, `RECOMMEND-READ` und `RECOMMEND-RESOURCE`.
+- **Originalauszug / quellennaher Auszug:**
+
+  > Interne Inhaltsnotiz: Kein Set dominiert alle Messdimensionen. W2 führt die beobachteten Mediane in Q1 und Q3-häufig an, L in Q3-selten und Q4, B in Q2 sowie bei Speicher, Insert und Preis-Update; W1 führt nur beim Stock-Update mit kleinem Abstand.
+
+- **Eigene Zusammenfassung:** Die Forschungsfrage ist nur prioritätsgebunden zu beantworten; ein einzelner universeller Sieger wäre durch den Referenzlauf nicht gedeckt.
+- **Grenze und Kontext:** Lokale Medianführer sind keine statistisch gesicherte Gesamtrangfolge und gelten ausschließlich für den definierten Workload.
+- **Reviewentscheidung:** `offen`
+- **Menschliche Prüfung:** ausstehend
+
+</details>
 
 ### CO-05-P02 — Bedeutung des Trade-offs
 
@@ -39,12 +60,33 @@ Voraussetzung ist die abgeschlossene Evaluation einschließlich Limitationen. Es
 - **Begründung:** Dies bildet den in der Einleitung angekündigten Beitrag vollständig ab.
 - **Evidenzbedarf:** Rückbezug auf eigene Resultate und bereits belegte Mechanismen.
 - **Evidenztyp:** `internal`
-- **Evidenzstatus:** `planned`
+- **Evidenzstatus:** `ready`
 - **Beziehung davor:** Begründung.
 - **Beziehung danach:** Einschränkung der Übertragbarkeit.
 - **Zielwörter:** 105.
 - **Medium:** keines.
 - **Offene Recherche:** keine.
+
+<details>
+<summary>Evidenz und menschliche Prüfung</summary>
+
+#### E-CO-05-P02-01 — Begründung des gemessenen Trade-offs
+
+- **Rolle:** `interne Evidenz`
+- **Vollbeleg / Artefakt:** Ergebnisblöcke EV-04-P02 bis EV-04-P07 sowie Read-, Index- und Write-Zusammenfassungen des Referenzlaufs.
+- **Link / Projektpfad:** C:/Users/simon/Documents/uni/fh_swf/schriftliche_Ausarbeitungen/scientific_writer/projects/mongodb-indexing-paper/chapter-plans/evaluation.md; D:/projects/uni/mongodb_indexing/artifacts/runs/2026-08-05_210546_567224_full_b24e5dfb/metrics/summary_by_scenario.csv; D:/projects/uni/mongodb_indexing/artifacts/runs/2026-08-05_210546_567224_full_b24e5dfb/metrics/index_observations.csv; D:/projects/uni/mongodb_indexing/artifacts/runs/2026-08-05_210546_567224_full_b24e5dfb/metrics/write_summary.csv
+- **Ausgabe / Version:** Full-Profil vom 05.08.2026, Benchmark-Commit `7752eed`.
+- **Fundstelle:** Evidenzblöcke `E-EV-04-P02-01` bis `E-EV-04-P07-01`.
+- **Originalauszug / quellennaher Auszug:**
+
+  > Interne Inhaltsnotiz: Zusätzliche Indizes reduzieren bei Q1 und Q3 die Scan- und Sortierarbeit deutlich, während sie bei Q2 trotz geringerer Dokumentarbeit keinen klaren Latenzgewinn liefern. Gleichzeitig wachsen Gesamtindexspeicher sowie Insert- und Preis-Update-Aufwand gegenüber B; W2 liegt bei Speicher und Insert unter L/W1.
+
+- **Eigene Zusammenfassung:** Die Setwahl muss scenario-lokale Lesevorteile gegen Speicher- und Write-Kosten abwägen, weil keine einzelne Messdimension die Eignung des vollständigen Sets bestimmt.
+- **Grenze und Kontext:** Die Abwägung enthält keine vorgegebenen Workloadgewichte; konkrete Prioritäten müssen von der Anwendung stammen.
+- **Reviewentscheidung:** `offen`
+- **Menschliche Prüfung:** ausstehend
+
+</details>
 
 ### CO-05-P03 — Grenzen der Antwort
 
@@ -82,4 +124,4 @@ Voraussetzung ist die abgeschlossene Evaluation einschließlich Limitationen. Es
 
 ## Offene Entscheidungen
 
-Keine; konkrete Empfehlung bleibt bis zur validierten Evaluation offen.
+Keine strukturelle Entscheidung offen; die konkrete Schlussformulierung folgt nach menschlicher Prüfung der Ergebnisblöcke.
