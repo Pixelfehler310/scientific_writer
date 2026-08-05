@@ -94,16 +94,16 @@ Voraussetzungen sind die in `foundations` erklärten Mechanismen und ein technis
 #### E-ME-03-P02-01 — Finaler Generatorstand und Pilotverteilungen
 
 - **Rolle:** `interne Evidenz`
-- **Vollbeleg / Artefakt:** Benchmark-Repository, Commit `7752eed`: Produktgenerator, Verteilungen, Seed-Zusammenfassung und technischer Smoke-Run `2026-08-05_191550_063712_smoke_a59817fc`.
+- **Vollbeleg / Artefakt:** Benchmark-Repository, Commit `7752eed`: Produktgenerator, Verteilungen, Seed-Zusammenfassung und Full-Run `2026-08-05_210546_567224_full_b24e5dfb`.
 - **Link / Projektpfad:** D:/projects/uni/mongodb_indexing/src/mongodb_indexing_lab/data/factory.py; D:/projects/uni/mongodb_indexing/src/mongodb_indexing_lab/data/distributions.py; D:/projects/uni/mongodb_indexing/src/mongodb_indexing_lab/data/seed.py
-- **Ausgabe / Version:** Git-Stand `7752eed` vom 05.08.2026; Smoke-Manifest mit `git_dirty_if_available: false`.
-- **Fundstelle:** `ProductFactory.build_product`, `BRAND_WEIGHTS`, `RunProfile.full`, `seed_collection`, `SeedResult` sowie `artifacts/runs/2026-08-05_191550_063712_smoke_a59817fc/manifest.json`.
+- **Ausgabe / Version:** Git-Stand `7752eed` vom 05.08.2026; Full-Manifest mit `git_dirty_if_available: false`.
+- **Fundstelle:** `ProductFactory.build_product`, `BRAND_WEIGHTS`, `RunProfile.full`, `seed_collection`, `SeedResult` sowie `artifacts/runs/2026-08-05_210546_567224_full_b24e5dfb/manifest.json`.
 - **Originalauszug / quellennaher Auszug:**
 
   > Interne Inhaltsnotiz: Der Generator verwendet einen lokalen `random.Random(seed)`, materialisiert `brand` auf oberster Ebene, gewichtet Northstar mit 0,28 und Summit mit 0,05 und erzeugt `stock`. Das Referenzprofil nutzt 1.000/10.000/100.000 Dokumente. Der 1.000er-Pilot zählte global 293 Northstar- und 61 Summit-Produkte; die vollständigen Q3-Prädikate trafen 41 beziehungsweise 6 Dokumente, Q1-eng 3 und Q1-breit 104.
 
-- **Eigene Zusammenfassung:** Datenmodell, gewichtete Verteilungen, Write-Feld, Referenzskalen und workloadbezogene Pilotchecks sind implementiert und manifestiert.
-- **Grenze und Kontext:** Der Smoke-Run bestätigt technische Machbarkeit und die 1.000er-Verteilung; empirische Befunde der 10.000er- und 100.000er-Skala entstehen erst im Referenzlauf.
+- **Eigene Zusammenfassung:** Datenmodell, gewichtete Verteilungen, Write-Feld und alle drei Referenzskalen sind implementiert, ausgeführt und im erfolgreichen Full-Manifest dokumentiert.
+- **Grenze und Kontext:** Die synthetischen Verteilungen bilden einen kontrollierten Versuchsraum und keine empirisch erhobene Produktionsverteilung.
 - **Reviewentscheidung:** `übernehmen`
 - **Menschliche Prüfung:** ausstehend
 
@@ -138,7 +138,7 @@ Voraussetzungen sind die in `foundations` erklärten Mechanismen und ein technis
   > Interne Inhaltsnotiz: Die Registry enthält Q1-eng/Q1-breit, Q2-häufig/Q2-selten, Q3-häufig/Q3-selten und Q4 mit den eingefrorenen Filtern, Sortierungen und Limits. Das Messmodul führt W1-Insert, W2a-Stock-Update und W2b-Price-Update auf festen 100er-Batches aus; der Runner erfasst im Vollprofil zehn Wiederholungen.
 
 - **Eigene Zusammenfassung:** Alle sieben Read-Varianten und drei Write-Arten sind als ausführbare, getestete Versuchsobjekte implementiert.
-- **Grenze und Kontext:** Der technische Smoke-Run verwendet kleinere Wiederholungszahlen und Batchgröße; die vorab festgelegten 30/10/100 gelten im `full`-Profil.
+- **Grenze und Kontext:** Der Full-Run setzt die vorab festgelegten 30 Read-Wiederholungen, zehn Write-Wiederholungen und Batchgröße 100 um; andere Parameterkombinationen wurden nicht untersucht.
 - **Reviewentscheidung:** `übernehmen`
 - **Menschliche Prüfung:** ausstehend
 
@@ -215,10 +215,10 @@ Voraussetzungen sind die in `foundations` erklärten Mechanismen und ein technis
 #### E-ME-03-P05-02 — Setrotation, Zustandskontrolle und vollständige Versionsbindung
 
 - **Rolle:** `interne Evidenz`
-- **Vollbeleg / Artefakt:** Benchmark-Repository, Commit `7752eed`: Runner, Profile, Docker Compose und Smoke-Manifest.
+- **Vollbeleg / Artefakt:** Benchmark-Repository, Commit `7752eed`: Runner, Profile, Docker Compose und Full-Manifest.
 - **Link / Projektpfad:** D:/projects/uni/mongodb_indexing/src/mongodb_indexing_lab/benchmark/runner.py; D:/projects/uni/mongodb_indexing/src/mongodb_indexing_lab/benchmark/profiles.py; D:/projects/uni/mongodb_indexing/docker-compose.yml
-- **Ausgabe / Version:** Git-Stand `7752eed` und Smoke-Run `2026-08-05_191550_063712_smoke_a59817fc`; MongoDB 8.2.11.
-- **Fundstelle:** `run_benchmark`, `deterministic_rotation`, `_runtime_image_identity`, `_validate_runtime_image`, `RunProfile.full`, Service `mongo` und `artifacts/runs/2026-08-05_191550_063712_smoke_a59817fc/manifest.json`.
+- **Ausgabe / Version:** Git-Stand `7752eed` und Full-Run `2026-08-05_210546_567224_full_b24e5dfb`; MongoDB 8.2.11.
+- **Fundstelle:** `run_benchmark`, `deterministic_rotation`, `_runtime_image_identity`, `_validate_runtime_image`, `RunProfile.full`, Service `mongo` und `artifacts/runs/2026-08-05_210546_567224_full_b24e5dfb/manifest.json`.
 - **Originalauszug / quellennaher Auszug:**
 
   > Interne Inhaltsnotiz: Für Reads erhält jedes Set eine separat und deterministisch erzeugte Collection; pro Szenario und Wiederholung rotiert die Reihenfolge zyklisch. Vor jeder Write-Wiederholung wird die Write-Collection gelöscht, neu erzeugt und neu indexiert. Compose und Referenzlauf verwenden den Digest `49f1…1250c`; das Manifest erfasst beobachtete Patchversion, Container-Image-ID, Repo-Digest, Serverstartparameter, Git-Stand und Rotationsplan. `full` bricht bei nicht verifizierbarem Digest ab.
@@ -284,14 +284,14 @@ Voraussetzungen sind die in `foundations` erklärten Mechanismen und ein technis
 - **Rolle:** `interne Evidenz`
 - **Vollbeleg / Artefakt:** Benchmark-Repository, Commit `7752eed`: Benchmark-Runner, Messmodul, Profile und Metrikartefakte.
 - **Link / Projektpfad:** D:/projects/uni/mongodb_indexing/src/mongodb_indexing_lab/benchmark/runner.py; D:/projects/uni/mongodb_indexing/src/mongodb_indexing_lab/benchmark/measurement.py; D:/projects/uni/mongodb_indexing/src/mongodb_indexing_lab/benchmark/profiles.py; D:/projects/uni/mongodb_indexing/src/mongodb_indexing_lab/benchmark/metrics.py
-- **Ausgabe / Version:** Git-Stand `7752eed` vom 05.08.2026; Smoke-Run `2026-08-05_191550_063712_smoke_a59817fc` erfolgreich.
+- **Ausgabe / Version:** Git-Stand `7752eed` vom 05.08.2026; Full-Run `2026-08-05_210546_567224_full_b24e5dfb` erfolgreich.
 - **Fundstelle:** `measure_query_latency`, `measure_write_operation`, Warmup-/Explain-/Repetition-Schleifen in `run_benchmark`, `RunProfile.full`, `results.csv` und `write_results.csv`.
 - **Originalauszug / quellennaher Auszug:**
 
   > Interne Inhaltsnotiz: `measure_query_latency` umfasst mit `perf_counter` den normalen `find`-Aufruf einschließlich Cursorverbrauch. Nach drei Warmups erzeugt der Runner 30 solche Wiederholungen; pro Szenario/Set wird Explain separat einmal erhoben. W1/W2a/W2b werden im Vollprofil je zehnmal aus frisch gesäten und indexierten Ausgangszuständen gemessen; Reset und Indexaufbau liegen außerhalb des Write-Zeitfensters.
 
 - **Eigene Zusammenfassung:** Clientlatenz, Explain-Struktur und Write-Aufwand sind technisch getrennte Messpfade mit den vorab festgelegten Wiederholungszahlen.
-- **Grenze und Kontext:** Der Smoke-Run prüft den Artefaktvertrag mit je einer Wiederholung; nur das `full`-Profil erzeugt die für die Auswertung vorgesehene Stichprobe.
+- **Grenze und Kontext:** Der Full-Run erzeugt die vorgesehene Stichprobe für genau die drei festgelegten Skalen und den warmen Einzelclient-Zustand.
 - **Reviewentscheidung:** `übernehmen`
 - **Menschliche Prüfung:** ausstehend
 
@@ -319,7 +319,7 @@ Voraussetzungen sind die in `foundations` erklärten Mechanismen und ein technis
 - **Rolle:** `interne Evidenz`
 - **Vollbeleg / Artefakt:** Benchmark-Repository, Commit `7752eed`: Ergebnisvalidierung, Runner, Metriken und Analyse.
 - **Link / Projektpfad:** D:/projects/uni/mongodb_indexing/src/mongodb_indexing_lab/benchmark/validation.py; D:/projects/uni/mongodb_indexing/src/mongodb_indexing_lab/benchmark/runner.py; D:/projects/uni/mongodb_indexing/src/mongodb_indexing_lab/benchmark/analysis.py
-- **Ausgabe / Version:** Git-Stand `7752eed` vom 05.08.2026; Smoke-Artefakte mit 28/28 Read- und 12/12 Write-Kombinationen.
+- **Ausgabe / Version:** Git-Stand `7752eed` vom 05.08.2026; Full-Artefakte mit 84/84 Read-Zellen und 36/36 Write-Zellen, jeweils vollständig wiederholt.
 - **Fundstelle:** `calculate_result_set_signature`, Signaturvergleich in `run_benchmark`, `build_summary_rows`, `build_write_summary_rows`, `assess_index_sets` und `_dominance_pairs`.
 - **Originalauszug / quellennaher Auszug:**
 

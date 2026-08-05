@@ -1,5 +1,5 @@
 schema_version: 1
-current_phase: evidence_synthesis
+current_phase: source_audit
 phases:
   initialization: approved
   brief: approved
@@ -8,9 +8,9 @@ phases:
   chapter_planning: approved
   deep_research: approved
   evidence_synthesis: approved
-  practical_work: not_started
-  drafting: not_started
-  source_audit: not_started
+  practical_work: approved
+  drafting: approved
+  source_audit: in_progress
   refinement: not_started
   latex_finalization: not_started
 gates:

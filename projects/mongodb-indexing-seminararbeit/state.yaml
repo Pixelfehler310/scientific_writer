@@ -1,13 +1,13 @@
 schema_version: 1
-current_phase: chapter_planning
+current_phase: evidence_synthesis
 phases:
   initialization: approved
   brief: approved
   scoping: approved
   outline: approved
   chapter_planning: approved
-  deep_research: not_started
-  evidence_synthesis: not_started
+  deep_research: awaiting_human_approval
+  evidence_synthesis: awaiting_human_approval
   practical_work: not_started
   drafting: not_started
   source_audit: not_started
