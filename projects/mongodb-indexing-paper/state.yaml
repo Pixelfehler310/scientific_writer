@@ -1,10 +1,10 @@
 schema_version: 1
-current_phase: brief
+current_phase: outline
 phases:
   initialization: approved
   brief: approved
-  scoping: not_started
-  outline: not_started
+  scoping: awaiting_human_approval
+  outline: approved
   chapter_planning: not_started
   deep_research: not_started
   evidence_synthesis: not_started
@@ -28,10 +28,13 @@ gates:
     note: G1 am 04.08.2026 ausdrücklich freigegeben. Forschungsfrage, Scope und Methode
       der vom Autor überarbeiteten Brief-Fassung sind bestätigt.
   G2:
-    status: pending
-    approved_at: null
-    approved_by: null
-    note: null
+    status: approved
+    approved_at: '2026-08-05T16:10:33.161154+00:00'
+    approved_by: Simon Sucker
+    note: G2 am 05.08.2026 ausdrücklich freigegeben. Scoping, Argumentationslinie,
+      Gliederung und Wortbudget sind bestätigt. Bereits vorhandene geeignete Theorieinhalte
+      sollen bevorzugt wiederverwendet werden; eine begründete moderate Überschreitung
+      des Theorie-Kapitelbudgets ist akzeptiert, sofern der rote Faden erhalten bleibt.
   G3:
     status: pending
     approved_at: null
@@ -60,4 +63,4 @@ gates:
 chapters: {}
 blockers: []
 invalidations: []
-last_validation: '2026-08-04T21:13:32.354685+00:00'
+last_validation: '2026-08-05T16:10:33.161154+00:00'
